@@ -1,0 +1,107 @@
+*** Settings ***
+Resource          专家登录获取项目接口.txt
+Resource          专家登录获取项目接口sql.txt
+Resource          ../public.txt
+Resource          评标获取企业信息接口.txt
+Resource          获取项目下载文件接口信息.txt
+Resource          获取项目下载文件接口sql.txt
+Resource          获取项目相关文件接口.txt
+
+*** Keywords ***
+专家登录成功获取项目模板
+    [Arguments]    ${idCard}    ${pwd}    ${result}    ${status}    ${SessionAlias}=expertLogin    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    ...    ${url}=expertEvaluation/expertLogin
+    ${data}    创建session以及入参数据    ${idCard}    ${pwd}
+    ${count_2}    ${login}    入参sql查询
+    正常入参与sql值进行比对    ${count_2}    ${login}    ${pwd}    ${idCard}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${logout}    ${paramvalue }    成功获取项目sql    ${idCard}    ${pwd}
+    成功断言    ${content}    ${result}    ${status}    ${logout}    ${paramvalue }
+    断开SESSION（公共）
+
+专家登录异常模板
+    [Arguments]    ${idCard}    ${pwd}    ${result}    ${status}    ${SessionAlias}=expertLogin    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    ...    ${url}=expertEvaluation/expertLogin
+    ${data}    创建session以及入参数据    ${idCard}    ${pwd}
+    ${count_2}    ${login}    入参sql查询
+    异常入参与sql进行比对    ${count_2}    ${login}    ${pwd}    ${idCard}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    异常断言    ${content}    ${result}    ${status}
+    断开SESSION（公共）
+
+专家登录_未设置评审时间模板
+    [Arguments]    ${idCard}    ${pwd}    ${result}    ${status}    ${SessionAlias}=expertLogin    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    ...    ${url}=expertEvaluation/expertLogin
+    ${data}    创建session以及入参数据    ${idCard}    ${pwd}
+    ${count_2}    ${login}    入参sql查询
+    正常入参与sql值进行比对    ${count_2}    ${login}    ${pwd}    ${idCard}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${logout}    ${paramvalue }    成功获取项目sql    ${idCard}    ${pwd}
+    未设置评审时间断言    ${content}    ${result}    ${status}    ${logout}
+    断开SESSION（公共）
+
+专家登录_尚未到评审时间模板
+    [Arguments]    ${idCard}    ${pwd}    ${result}    ${status}    ${SessionAlias}=expertLogin    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    ...    ${url}=expertEvaluation/expertLogin
+    ${data}    创建session以及入参数据    ${idCard}    ${pwd}
+    ${count_2}    ${login}    入参sql查询
+    正常入参与sql值进行比对    ${count_2}    ${login}    ${pwd}    ${idCard}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${logout}    ${paramvalue }    成功获取项目sql    ${idCard}    ${pwd}
+    尚未到评审时间断言    ${content}    ${result}    ${status}    ${logout}
+    断开SESSION（公共）
+
+成功获取企业信息模板
+    [Arguments]    ${projId}    ${result}    ${status}    ${SessionAlias}=BidEvaCom    ${url}=expertEvaluation/getBidEvaCom
+    创建SESSION（公共）
+    ${data}    创建入参数据    ${projId}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${t_proj}    ${t_proj_unit}    ${count_unit}    ${t_proj_part}    ${count_part}    ${t_files}    ${file_count}
+    ...    成功获取企业信息sql    ${projId}
+    断言以及sql数据比对    ${content}    ${result}    ${status}    ${t_proj}    ${projId}
+    断开SESSION（公共）
+
+获取企业信息-异常模板
+    [Arguments]    ${projId}    ${result}    ${status}    ${error_1}    ${SessionAlias}=BidEvaCom    ${url}=expertEvaluation/getBidEvaCom
+    创建SESSION（公共）
+    ${data}    创建入参数据    ${projId}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    获取企业信息-异常断言    ${content}    ${result}    ${status}    ${error_1}
+    断开SESSION（公共）
+
+获取下载文件模板1
+    [Arguments]    ${room_id1}    ${room_id2}    ${result}    ${status}    ${SessionAlias}=BidEvaCom    ${url}=expertEvaluation/getBidEvaProj
+    创建SESSION（公共）
+    ${data}    创建下载文件入参数据    ${room_id1}    ${room_id2}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${t_projs}    ${t_projs_count}    获取下载文件出参sql
+    下载文件断言以及sql对比    ${content}    ${result}    ${status}    ${t_projs}    ${t_projs_count}    ${room_id1}
+    ...    ${room_id2}
+    断开SESSION（公共）
+
+获取下载文件模板2
+    [Arguments]    ${room_id1}    ${room_id2}    ${result}    ${status}    ${SessionAlias}=BidEvaCom    ${url}=expertEvaluation/getBidEvaProj
+    创建SESSION（公共）
+    ${data}    创建下载文件入参数据    ${room_id1}    ${room_id2}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${t_projs}    获取下载文件出参sql2    ${room_id1}    ${room_id2}
+    获取下载文件断言以及sql对比2    ${content}    ${result}    ${status}    ${t_projs}    ${room_id1}    ${room_id2}
+
+获取相关文件接口模板
+    [Arguments]    ${proj_id}    ${result}    ${status}    ${SessionAlias}=BidEvaCom    ${url}=expertEvaluation/getBidEvaProjFiles
+    创建SESSION（公共）
+    ${data}    创建相关文件入参数据    ${proj_id}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${t_projs}    ${t_projfiles}    ${t_projfiles_1}    ${t_projfiles_2}    ${count}    ${t_projfiles_3}    ${t_projfiles_4}
+    ...    ${t_projfiles_5}    获取相关文件出参sql（sqlserver)    ${proj_id}
+    ${a_list}    ${C}    获取相关文件出参sql(mongo)    ${t_projfiles_2}    ${count}
+    相关文件断言比较数据比对    ${content}    ${result}    ${status}    ${t_projs}    ${t_projfiles}    ${t_projfiles_1}
+    ...    ${t_projfiles_2}    ${a_list}    ${count}    ${t_projfiles_3}    ${t_projfiles_4}    ${t_projfiles_5}
+    ...    ${C}
+
+获取相关文件异常模板
+    [Arguments]    ${proj_id}    ${result}    ${status}    ${error_1}    ${SessionAlias}=BidEvaCom    ${url}=expertEvaluation/getBidEvaProjFiles
+    创建SESSION（公共）
+    ${data}    创建相关文件入参数据    ${proj_id}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    获取相关文件-异常断言    ${content}    ${result}    ${status}    ${error_1}

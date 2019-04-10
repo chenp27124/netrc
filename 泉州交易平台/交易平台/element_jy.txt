@@ -1,0 +1,427 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           RequestsLibrary
+Library           Collections
+Library           String
+Library           OperatingSystem
+Library           ExcelLibrary
+
+*** Keywords ***
+打开浏览器
+    open browser    http://59.57.251.156:8083/ebid/website/org.gocom.abframe.auth.Login.flow    ie
+
+窗口最大化
+    maximize browser window
+
+输入用户名
+    input text    id=userid    ikeysetting_185561
+
+输入密码
+    input password    id=password    aa000000
+
+点击登录按钮
+    Input Text    xpath=//*[@id="verifyCode_container"]/input    1111
+    click element    id=loginImg
+    sleep    2
+
+点击“建设工程"菜单
+    sleep    2
+    Wait Until Page Contains Element    id=topFrame
+    select frame    id=topFrame
+    click element    xpath=//*[@id="header"]/ul/li[2]/a
+    unselect frame
+
+点击"招标登记"菜单
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[1]
+    select frame    xpath=//*[@id="oa_frame"]/frame[1]    #leftFrame
+    click element    id=181    #泉州交易平台
+    unselect frame    #退出顶层bodyFRame_all
+
+点击”新增“按钮
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    click element    xpath=/html/body/table/tbody/tr/td/input[1]
+
+选择”交易中心”
+    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    select from list    xpath=//*[@id="dataform"]/table[1]/tbody/tr[2]/td[2]/select    14
+
+选择“是否依法招标”
+    Select Radio Button    isLawBid    0
+
+项目报建编号
+    input text    xpath=//*[@id="dataform"]/table[1]/tbody/tr[4]/td[2]/input[1]    /
+
+招标项目编号
+    [Arguments]    ${projCode}
+    input text    xpath=//*[@id="projcode"]    ${projCode}
+
+招标项目名称
+    input text    id=projname    ${projName}
+
+招标人名称
+    input text    xpath=//*[@id="dataform"]/table[1]/tbody/tr[7]/td[2]/input    张三
+
+联系手机
+    input text    xpath=//*[@id="dataform"]/table[1]/tbody/tr[8]/td[4]/input    13456789011
+
+招标方式
+    select from list    bidRegister/tradetype    1
+
+保证金缴交方式
+    select checkbox    xpath=//*[@id="cash"]
+
+项目组成员
+    select from list    bidRegister/projmainer    193788
+
+公共资源交易分类
+    select from list    id=projectType    G01
+
+项目名称
+    input text    id=projectname    ${projName}
+
+项目所在行政区域
+    input text    id=cityid_input    泉州市
+    input text    id=countyid_input    市辖区
+
+项目行业分类代码
+    input text    id=returnValue    E47
+
+项目地址
+    input text    xpath=//*[@id="dataform"]/table[2]/tbody/tr[7]/td[2]/input    观日路
+
+资金来源
+    input text    xpath=//*[@id="dataform"]/table[2]/tbody/tr[8]/td[2]/input    自筹
+
+点击“上传文件”
+    click element    xpath=//*[@id="dataform"]/table[3]/tbody/tr[2]/td/table/tbody/tr[2]/td/input
+
+文件类型
+    unselect frame    #退出顶层bodyframe_all
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入顶层bodyframe_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #进入bodyframe
+    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe" and contains(@src,"com.hymake.hyebid.bidRegister.bidRegister.flow?_eosFlowAction=forUpload")]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe" and contains(@src,"com.hymake.hyebid.bidRegister.bidRegister.flow?_eosFlowAction=forUpload")]
+    select from list    xpath=//*[@name="attachfile/filetype"]    1
+
+文件标题
+
+点击浏览按钮
+    sleep    2
+    click element    xpath=//*[@value="浏览"]
+    ${A}    get element attribute    xpath=//*[@id="filediv"]/input[3]@value
+    log    ${A}
+    Comment    choose file    xpath=//*[@value="浏览"]    E:\\RF\\bidfile\\招标公告.doc
+
+上传文件并保存
+    sleep    2
+    Comment    AutoItLibrary.Run    招标登记文件.exe
+    win wait    选择要加载的文件
+    win active    选择要加载的文件
+    Control Set Text    \    \    Edit1    E:\\RF\\bidfile\\招标公告.doc
+    Control Click    \    \    Button1
+    Comment    Comment    Control Send    选择要加载的文件    \    [CLASS:Edit; INSTANCE:1]    E:\\RF\\bidfile\\招标公告.doc
+    Comment    Comment    sleep    2
+    Comment    Comment    Control Click    Button1
+    sleep    5
+    click element    xpath=//*[@id="dataform"]/table/tbody/tr[4]/td/input[1]
+
+点击”提交“按钮
+    sleep    1
+    unselect frame    #退出顶层bodyframe_all
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    click element    xpath=//*[@id="dataform"]/table[4]/tbody/tr[1]/td[1]/input[2]
+
+点击"场地预约"菜单
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[1]
+    select frame    xpath=//*[@id="oa_frame"]/frame[1]    #leftFrame
+    click element    xpath=//*[@id="3003"]
+    unselect frame    #退出顶层bodyFRame_all
+
+场地预约-新增按钮
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    click element    xpath=//*[@name="queryForm"]/table/tbody/tr[3]/td/input[2]
+
+场地预约-招标项目名称
+    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    click element    xpath=//*[@id="objTable"]/tbody/tr[1]/td[2]/input[2]    #点击"选择招标登记项目"按钮
+    unselect frame
+
+选择招标项目名称
+    Comment    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Comment    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    Comment    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe" and contains(@src,"com.hymake.fjbid.assement.selectregid.flow?_eosFlowAction=selectregid")]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe" and contains(@src,"com.hymake.fjbid.assement.selectregid.flow?_eosFlowAction=selectregid")]
+    input text    xpath=//*[@name="queryForm" and @action="com.hymake.fjbid.assement.selectregid.flow"]/table/tbody/tr/td[2]/input[1]    ${projName}
+    click element    xpath=//*[@value="搜索"]
+    click element    id=group1_1_radio
+    click element    xpath=//*[@name="listForm"and @action="com.hymake.fjbid.assement.selectregid.flow"]/table/tbody/tr[5]/td/input
+
+预约类别
+
+预约开始和截止时间
+    [Arguments]    ${start_time}    ${end_time}
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe" ]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe" ]
+    execute javascript    window.document.getElementById("time_input").value="${start_time}"
+    execute javascript    window.document.getElementById("endtime_input").value="${end_time}"
+
+场地
+    click element    xpath=//*[@id="cd185"]/input    #开标室
+    click element    xpath=//*[@id="cd186"]/input    #评标室
+
+联系人
+    input text    xpath=//*[@id="objTable"]/tbody/tr[5]/td[2]/input    张三
+
+联系人手机-预约
+    input text    xpath=//*[@id="objTable"]/tbody/tr[5]/td[4]/input    13456789011
+
+保存并提交申请（预约）
+    click element    xpath=//*[@id="objTable"]/tbody/tr[8]/td/input[2]
+
+红色网站登录流程
+    open browser    http://59.57.251.146:8002/UiForWeb/default/homePage.do    ie
+    maximize browser window
+    click element    id=header_login
+    input text    id=login_userName    ikeysetting_185561
+    input text    id=login_password    aa000000
+    click element    id=login_btn
+    sleep    2
+    focus    xpath=//*[@id="form11show"]/a/img
+    click element    xpath=//*[@id="form11show"]/a/img    #点击“专业交易平台专栏"
+    click element    xpath=//*[@id="form11"]/ul/li[2]/img    #点击公共资源交易网站
+    Comment    Wait Until Element Is Visible    id=nowdate
+    sleep    3
+    select window    title=泉州公共资源交易平台
+
+招标登记查询
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    input text    xpath=//*[@name="param/projname"]    ${projName}
+    click element    xpath=//*[@value="查询"]
+
+点击”招标建档"按钮
+    click element    xpath=//*[@value="招标建档"]
+
+项目类型
+    select radio button    projbase/projtype    A
+
+招标组织形式
+    select from list    xpath=//*[@name="projbase/orgform"]    2
+
+资格审查方式
+    select radio button    projbase/qualifymethod    2
+
+是否接受联合投标
+    select radio button    projbase/isallowcoalition    0
+
+招标次数
+    select from list    xpath=//*[@name="projbase/noofbids"]    1
+
+交易场所
+
+审核部门名称
+    sleep    2
+    input text    xpath=//*[@name="projbase/auditdeptname"]    审核
+
+监督部门名称
+    input text    xpath=//*[@name="projbase/supervisedepname"]    监督
+
+标段数量
+
+评标办法
+    [Arguments]    ${bidmind}
+    select from list    xpath=//*[@name="projbase/bidmid"]    ${bidmind}
+
+点击确定按钮
+    click element    xpath=//*[@value="确定"]
+
+项目备案编号
+    Comment    wait until page contains    依法要求在省行政监督平台备案的项目，此项必填，否则不能建档;未要求备案的，请填入“/"
+    sleep    6
+    input text    xpath=//*[@name="projbase/reviewCode"]    /
+
+招标人
+    click element    xpath=//*[@name="dataform1"]/table[2]/tbody/tr[1]/td/input
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    Wait Until Page Contains Element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    select checkbox    id=group1_1_checkbox
+    click element    xpath=/html/body/table/tbody/tr/td/input[1]
+    unselect frame
+
+分类
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    click element    xpath=//*[@name="dataform1"]/table[4]/tbody/tr[3]/td[4]/input[2]
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    wait until page contains element    id=ifm1
+    select frame    id=ifm1
+    click element    xpath=//*[@src="/ebid/common/skins/outlook/images/tree/FPlus.gif"]
+    click element    xpath=//*[@id="codeTree_container"][1]/div/div[2]/div[1]/div[2]/div[1]/div[1]/img[2]
+    click element    xpath=//*[@id="codeTree_container"][1]/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/img[5]
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    click element    xpath=//*[@value=">>>"]
+    click element    xpath=/html/body/table/tbody/tr[2]/td/input[1]
+
+合同估算价
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    input text    id=null    1
+
+质量要求
+    click element    xpath=//*[@name="dataform1"]/table[4]/tbody/tr[3]/td[6]/input[2]
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    input text    xpath=//*[@name="data"]    11
+    click element    xpath=//*[@value="保存"]
+    send    {ENTER}
+    sleep    2
+
+工期要求
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    click element    xpath=//*[@name="dataform1"]/table[4]/tbody/tr[3]/td[7]/input[2]
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    input text    xpath=//*[@name="data"]    12
+    click element    xpath=//*[@value="保存"]
+    send    {ENTER}
+    sleep    2
+
+标段包内容
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    click element    xpath=//*[@name="dataform1"]/table[4]/tbody/tr[3]/td[9]/a[1]
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    input text    xpath=//*[@name="bid/buildcontent"]    13
+    click element    xpath=//*[@value="保存"]
+    sleep    3
+    send    {ENTER}
+    sleep    3
+
+投资人资格条件
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    click element    xpath=//*[@name="dataform1"]/table[4]/tbody/tr[3]/td[9]/a[2]
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    input text    xpath=//*[@name="bid/tpcondition"]    14
+    click element    xpath=//*[@value="保存"]
+    sleep    3
+    send    {ENTER}
+    sleep    3
+
+保证金
+    unselect frame
+    Wait Until Page Contains Element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #bodyFRame_all
+    Wait Until Page Contains Element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #bodyframe
+    input text    id=bidbond1    100
+    select checkbox    id=group1_1_checkbox
+
+控制价
+    input text    id=ctrlprice1    2
+
+开标截止时间
+    [Arguments]    ${open_end_time}
+    execute javascript    window.document.getElementById("refs[1]/openedtime_show_id").value="${open_end_time}"
+
+报名开始时间
+    [Arguments]    ${sign_start_time}
+    execute javascript    window.document.getElementById("refs[1]/signupstartdate_show_id").value="${sign_start_time}"
+
+报名截止时间
+    [Arguments]    ${sign_end_time}
+    execute javascript    window.document.getElementById("refs[1]/signupendtdate_show_id").value="${sign_end_time}"
+
+投标文件递交截止时间
+    [Arguments]    ${bid_end_time}
+    execute javascript    window.document.getElementById("refs[1]/bidfileeddate_show_id").value="${bid_end_time}"
+
+点击保存
+    click element    xpath=//*[@value="保存"]
+    sleep    3
+    send    {ENTER}
+    sleep    2
+    send    {ENTER}
+    sleep    2
+    send    {ENTER}
+    sleep    2
+    send    {ENTER}
+
+投标保证金截止时间
+    [Arguments]    ${bail_end_time}
+    execute javascript    window.document.getElementById("refs[1]/bailendtime_button").value="${bail_end_time}"
+
+投标有效期
+    input text    xpath=//*[@name="refs[1]/limitdays"]    20
+
+专业类别
+    [Arguments]    ${class}
+    sleep    2
+    Comment    select from list by value    id=projbase/class[1]/classvalueid    9
+    click element    id=projbase/class[0]/classvalueid
+    click element    xpath=//*[@id="projbase/class[0]/classvalueid"]/${class}
+
+工程类别

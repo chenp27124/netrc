@@ -1,0 +1,553 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           AutoItLibrary
+Library           Collections
+Library           String
+Library           OperatingSystem
+Library           ExcelLibrary
+Library           requests
+Library           json
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+Library           AppiumLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}
+    set global variable    ${url}
+    open browser    ${url}    chrome
+    Maximize Browser Window
+
+用户名
+    [Arguments]    ${name}
+    input text    id=username    ${name}
+
+密码
+    [Arguments]    ${pwd}
+    input password    id=password    ${pwd}
+
+登录按钮
+    click button    css=.button
+
+关闭浏览器
+    close browser
+
+检查成功断言
+    sleep    3
+    Comment    select window    title=海易招电子招投标交易平台
+    page should contain    Hello    \    #断言是否成功登录
+    comment    click element    xpath= \ //*[@id="1"]/li[2]/a
+
+输入招标信息
+    [Arguments]    ${BID_NAME}
+    set test variable    ${BID_NAME}
+    input text    id=tenderProjName    ${BID_NAME}
+
+选择交易分类
+    sleep    2
+    click element    xpath=//div[@class='type_1']/ul/li[text()='全部']
+
+查找
+    click button    id=searchBtn
+
+选择招标类型
+    click element    xpath=//div[@class='type_1']/ul/li[text()='小规模工程']
+
+点击项目链接
+    [Arguments]    ${BID_NAME}
+    sleep    2
+    ${text1}    get text    xpath=//div[@class='type_data']/ul/li/a[contains(text(),'${BID_NAME}')]
+    log    ${text1}
+    ${href}    get element attribute    xpath=//div[@class='type_data']/ul/li/a[contains(text(),'${BID_NAME}')]@href
+    log    ${href}
+    Comment    set suite varible    ${href}
+    click link    xpath=//div[@class='type_data']/ul/li/a[text()='${text1}']
+    wait until page contains    ${text1}
+
+点击我要报名l链接
+    sleep    5
+    select window    title=项目详情
+    click link    xpath=//*[@id="signUpUrl"]/a
+
+联系人
+    Comment    sleep    2
+    Comment    execute javascript    window.document.getelementbyid(''contact'').value=''aaa''
+    Comment    select window    title=报名
+    select frame    //*[@id="frameBox"]/iframe
+    input text    id=contact    张三
+
+投标人联系人手机
+    Comment    execute javascript    window.document.getelementbyid("mobile").value=13456789012
+    Comment    select frame    //*[@id="frameBox"]/iframe
+    input text    id=linkeman    张三
+    input text    id=linktel    13561234567
+
+项目名称
+    [Arguments]    ${projName}
+    input text    id=projname    ${projName}
+
+项目编号
+    [Arguments]    ${bidCode}
+    input text    id=bidcode    ${bidCode}
+
+招标项目类型
+    select radio button    projtype    B
+
+招标方式和形式
+    select from list by value    id=tradetype    1
+    select from list by value    id=orgtype    1
+
+项目属地和详细地址
+    select from list by value    id=province    350000
+    select from list by value    id=city    350100
+    select from list by value    id=area    350103
+    input text    id=projadd    11
+
+点击菜单和发布按钮
+    click element    xpath= //*[@id="1"]/li[2]/a
+    wait until page contains element    id=iframe
+    select frame    id=iframe
+    click button    xpath=/html/body/form/div/input
+
+招标人和招标人代码
+    sleep    1
+    input text    id=tenderee    123456
+    input text    id=tenderee_code    123123456
+
+是否采用电子标
+    focus    id=isebid1
+    select radio button    isebid    isebid1
+
+报名方式
+    select radio button    signuptype    signuptype1
+
+是否组织考察
+    select radio button    answer_meeting    answer_meeting0
+
+报名截止时间
+    [Arguments]    ${signupendtime}
+    execute javascript    window.document.getElementById('signupendtime').value='${signupendtime}'
+
+投标截止时间
+    [Arguments]    ${stoptime}
+    execute javascript    window.document.getElementById('stoptime').value='${stoptime}'
+
+投标有效期
+    input text    id=bid_validity    21
+
+评标方法
+    select from list by value    id=reviewmethod    9
+
+开标时间
+    [Arguments]    ${opentime}
+    set test variable    ${opentime}
+    execute javascript    window.document.getElementById('opentime').value='${opentime}'
+
+开标地点
+    [Arguments]    ${openaddr}
+    input text    id=openaddr    ${openaddr}
+
+解标时长
+    Comment    input text    id=decryminute    30
+
+解密截止时间
+    Comment    ${opentime1}    get time    year-month-day hour:min    ${opentime}
+    log    ${opentime}
+    Comment    ${decrypttime }    get time    year-month-day hour:min    ${opentime}+1h
+    Comment    log    ${decrypttime }
+
+投标银行
+    select checkbox    xpath=//*[@id="bondTab"]/tbody/tr[2]/td[1]/input
+
+项目经理
+    click element    xpath=//*[@id="con-tab"]/div/table[6]/tbody/tr/td[2]/input[3]
+    Comment    sleep    2
+    Comment    select frame    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[2]/td[2]/div/iframe
+    Comment    click button    xpath=//*[@id="tb"]/a/span/span[1]
+    Comment    sleep    1
+    wait until element is visible    xpath=//*[@id="tb"]/a/span/span[1]
+    select checkbox    xpath=//*[@id="datagrid-row-r1-2-1"]/td[1]/div/input
+    click button    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]
+
+项目助理
+    click element    xpath=//*[@id="con-tab"]/div/table[6]/tbody/tr/td[4]/input[3]    #点击“项目助理"按钮
+    sleep    3
+    Comment    select frame    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[2]/td[2]/div/iframe
+    Comment    wait until element is visible    xpath=//*[@id="tb"]/a/span
+    Comment    ${title}    Get Window Identifiers
+    Comment    log    ${title}
+    click element    id=datagrid-row-r1-2-1
+    click element    xpath=/html/body/div[1]/div/div[3]/ul/li[1]/button/div[2]/label
+    click element    xpath=/html/body/div[2]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]
+
+招标资料费
+    input text    id=gprice    0
+
+点击下一步按钮
+    click element    //*[@id="myForm"]/div[2]/input[2]
+    click element    //*[@id="myForm"]/div[2]/input[2]
+
+点击标段操作按钮
+    sleep    3
+    click element    xpath=//*[@id="tb_items"]/tbody/tr/th[5]/a
+
+输入标段内容
+    input text    id=bidcontent_1    标段内容
+
+输入发标价
+    input text    id=budget_1    100
+
+输入投标保证金
+    input text    id=bidbond_1    1000
+
+点击标段保存按钮
+    click button    id=_submit
+
+点击“下一步"(评审条款）
+    sleep    2
+    click element    id=_submit
+    Comment    input text    xpath=//*[@id="proj_gprice[163]"]    1    #输入招标费用
+    click element    xpath=//*[@id="myForm"]/div[2]/input[2]    #点击下一步
+
+点击菜单并进入项目
+    click element    xpath=//*[@id="1"]/li[2]/a    #点击”建设工程"链接
+    sleep    2
+    select frame    xpath=//*[@id="iframe"]
+    Comment    click button    xpath=//*[@id="myForm"]/table/tbody/tr[1]/td[1]/input[2]    #点击第一个项目的“进入项目"链接
+    click button    xpath=//*[@id="myForm"]/table/tbody/tr[6]/td[1]/input[2]    #点击进入第6个项目的”进入项目"链接
+
+点击发布公告链接
+    Comment    focus    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[2]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a
+    Comment    click element    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[2]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a
+
+导入招标公告并盖章
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[1]/td[2]/input[1]    #点击导入按钮
+    AutoItLibrary.Run    上传评审报告.exe
+    Comment    choose file    xpath=//*[@id="con-tab"]/div/table/tbody/tr[1]/td[2]/input[1]    E:\\RF\\bidfile\\1-1 招标公告.doc
+    Comment    wait until element is visible    xpath=//*[@id="pageNumber"]
+    Comment    reload page
+    sleep    15
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[1]/td[2]/input[2]
+    sleep    10
+    send    {RIGHT}
+    send    {RIGHT}
+    send    {ENTER}
+    ${X}    Mouse Get Pos X
+    log    ${X}
+    ${Y}    Mouse Get Pos Y
+    log    ${Y}
+    mouse move    600    400
+    mouse click    LEFT
+    sleep    2
+    send    {LSHIFT 5}
+
+导入招标文件并盖章
+
+保存并发布按钮
+
+点击“开标大厅"按钮
+    sleep    5
+    select window    title=项目详情
+    click element    xpath=//*[@id="openHallUrl"]/a
+
+读取CA信息弹框
+    sleep    3
+    Comment    ${BB}    Confirm Action
+    Comment    log    ${BB}
+    Comment    should be equal    ${BB}    正在读取CA,请稍等...
+    Comment    choose ok on next confirmation
+    send    {ENTER}
+    Select Window    title=开标大厅
+    sleep    3
+
+输入报名号
+    input text    xpath=//*[@id="signno_input"]    100099973649
+
+输入密码
+    input password    id=signnopwd_input    111111
+
+点击”立即签到"按钮
+    click button    xpath=//*[@id="s_div"]
+
+选择协议
+    Comment    open browser    http://192.168.102.151:82/hyweb/openbid/bidderTwo.do    chrome
+    Comment    Maximize Browser Window
+    sleep    3
+    focus    id=agree_1
+    Select Radio Button    agree    agree_1
+
+点击下一步
+    click element    xpath=/html/body/div[2]/div[2]/div[2]/button[2]
+
+报建信息查询接口脚本
+    Create Session    httpbin    http://192.168.102.143:8090
+    Comment    ${data}    Create Dictionary    pageindex    1    pagesize    10
+    set suite variable    ${data}    { "pageindex":"1", "pagesize":"10" }
+    ${headers}    Create Dictionary    Content-Type    application/json
+    ${resp}    Post Request    httpbin    /XmBizRestForApp/webservice/app/getProjForBj    data=${data}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    ${jsondata}    To Json    ${resp.content}
+    ${GetSuccess}    Get From Dictionary    ${jsondata}    errormsg
+    Should Be Equal As Strings    ${GetSuccess}    成功
+    dictionary should contain key    ${jsondata['datas'][0]}    pubdate
+    log    ${jsondata['datas'][0]}
+    [Teardown]    Delete All Sessions
+
+if语句
+    ${A}    set variable    2
+    ${B}    set variable    5
+    run keyword if    ${A}>=1    log    a大于1    ELSE IF    ${A}<=5    log
+    ...    a小于等于5    ELSE    log    aaa
+
+FOR循环
+    : FOR    ${i}    IN RANGE    10
+    \    run keyword if    ${i}==4    EXIT FOR LOOP
+    \    log    ${i}
+    log    outside loop
+
+点击“下一环节"按钮
+    click button    id=x_div
+
+点击“立即解密"按钮
+    click button    id=d_div
+    Comment    click button    id=x_div
+
+点击组建专家和“新增指定专家”按钮
+    click element    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[4]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a    #点击”新增组建专家"链接
+    sleep    1
+    click element    xpath=/html/body/div[3]/div[2]/div/input[1]    #点击新增指定专家按钮
+
+类别
+    select from list by value    id=expertcls    02
+
+专家名称
+    Comment    click button    xpath=//*[@id="con-tab"]/div/table/tbody/tr[2]/td/input[3]
+    Comment    sleep    2
+    Comment    select frame    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[2]/td[2]/div/iframe
+    Comment    select checkbox    xpath=//*[@id="datagrid-row-r1-2-0"]/td[1]/div/input
+    Comment    click button    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]
+    input text    id=ename    王五
+
+证件号码并保存返回
+    input text    xpath=//*[@id="idcard"]    350821198705161234
+    sleep    2
+    click button    xpath=//*[@id="myForm"]/div[2]/input[1]    #点击保存按钮
+    sleep    2
+    click button    xpath=/html/body/div[3]/div[2]/div/input[4]    #点击返回按钮（查询列表的返回按钮）
+
+上传评审报告
+    sleep    2
+    focus    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[4]/table/tbody/tr/td/table/tbody/tr[6]/td/div/span/a
+    Click Element    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[4]/table/tbody/tr/td/table/tbody/tr[6]/td/div/span/a    #点击“上传评审报告"按钮
+    Comment    sleep    5
+    Wait Until Page Contains    上传文件不能超过50M！
+    Unselect Frame
+    Click Element    xpath=//*[@id="AjaxFile"]    #点击选择文件按钮
+    Comment    Control Send    打开    1-1 招标公告    [CLASS:Edit; INSTANCE:1]    E:\\RF\\bidfile\\1-1 招标公告.doc
+    Comment    sleep    1
+    Comment    Control Click    打开    1-1 招标公告    Button1    LEFT
+    AutoItLibrary.Run    上传评审报告.exe
+    sleep    2
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]
+    Comment    choose file    xpath=//*[@id="AjaxFile"]    E:\\RF\\bidfile\\1-1 招标公告.doc    #上传评审报告
+
+发布公告（结果）(附件）
+    sleep    2
+    focus    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[6]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a
+    Click Element    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[6]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a    #点击发布公告结果链接
+    sleep    3
+    Click Element    xpath=/html/body/div[3]/input    #点击新增按钮
+    sleep    2
+    unselect frame
+    select frame    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[2]/td[2]/div/iframe
+    Click Element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[4]/td/input    #点击上传（附件）按钮
+    sleep    1
+    unselect frame
+    select frame    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[2]/td[2]/div/iframe
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr/td/input[3]    #点击（上传附件）弹框页面的上传按钮
+    AutoItLibrary.Run    发布结果公示.exe
+    sleep    2
+    click button    xpath=/html/body/div[2]/input[1]    #上传附件的确定按钮
+
+发布公告（结果）（文件）
+    sleep    2
+    focus    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[6]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a
+    Click Element    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[6]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a    #点击发布公告结果链接
+    sleep    3
+    Click Element    xpath=/html/body/div[3]/input    #点击新增按钮
+    sleep    2
+    unselect frame
+    select frame    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[2]/td[2]/div/iframe
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[3]/td/input[1]    #点击上传文件按钮
+    AutoItLibrary.Run    上传评审报告.exe
+    sleep    15
+    Comment    wait until page contains element    id=pageNumber    15
+    focus    xpath=//*[@id="con-tab"]/div/table/tbody/tr[3]/td/input[2]
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[3]/td/input[2]
+    sleep    15
+
+点击“发布招标公告"链接
+    click element    xpath=//*[@id="con-tab"]/div/div[2]/ul/li[2]/table/tbody/tr/td/table/tbody/tr[1]/td/div/span/a
+
+导入公告
+    sleep    2
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[1]/td[2]/input[1]
+    AutoItLibrary.Run    发布结果公示.exe
+    sleep    15
+
+盖章公告
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr[1]/td[2]/input[2]
+    sleep    10
+    send    {RIGHT}
+    send    {RIGHT}
+    send    {ENTER}
+    ${X}    Mouse Get Pos X
+    log    ${X}
+    ${Y}    Mouse Get Pos Y
+    log    ${Y}
+    mouse move    600    400
+    mouse click    LEFT
+    Comment    sleep    1
+    send    {LSHIFT 5}
+    Comment    send    {ENTER}
+    Comment    send    {RIGHT}
+    Comment    send    {ENTER}
+
+公共平台登陆
+    open browser    http://59.57.251.156:9100/qztender//abframe/auth/login.jsp?platform=0    ie
+    Maximize Browser Window
+    Input Text    id=userid    cszxtest
+    Input Password    id=password    Hymake000000
+    ${value}    get element attribute    xpath=//*[@id="verifyCode_container"]/input@value
+    input text    xpath=//*[@id="verifyCode_container"]/input    ${value}
+    Click element    xpath=//*[@id="loginbox"]/div/div[2]/div/div[4]/table/tbody/tr[6]/td[2]/input
+    sleep    3
+    select frame    xpath=/html/frameset/frame[1]
+    click element    xpath=//*[@id="header"]/ul/li[3]/a
+
+订单详情
+    select window    title=报名
+    select checkbox    xpath=//*[@id="o_detail"]/tbody/tr[2]/td[1]/input[1]
+
+支付方式
+    focus    xpath=//*[@id="dataForm"]/div/div[9]/div[2]/input[2]
+    select radio button    paytype    4
+
+确认下单
+    click element    xpath=//*[@id="dataForm"]/div/div[10]/div/input[2]
+    select window    title=支付成功
+    ${A}    get text    xpath=/html/body/div[2]/div[2]/table/tbody/tr[3]/td[2]
+    log    ${A}
+    Comment    set suite variable    ${A}
+
+是否推广项目
+    select radio button    ispush    0
+
+读取excel数据
+    open excel    E:\\RF\\bidfile\\excelaaa.xls
+    ${row_count}    get row count    Sheet1    #${row_count}为行数
+    @{read_columna}    get column values    Sheet1    0    #第一列的所有值
+    @{read_columnb}    get column values    Sheet1    1    #第二列的所有值
+    log    ${row_count}
+    @{a_list}    create list
+    @{b_list}    create list
+    : FOR    ${X}    IN RANGE    ${row_count}
+    \    ${a}    set variable    ${read_columna[${X}][1]}
+    \    ${b}    set variable    ${read_columnb[${X}][1]}
+    \    append to list    ${a_list}    ${a}
+    \    append to list    ${b_list}    ${b}
+    log    outside loop
+    log    ${a_list}
+    log    ${b_list}
+    log many    @{a_list}
+
+sql server 数据库连接
+    Connect To Database Using Custom Params    pymssql    database='xmtender',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${A}    query    select cname,rname from dbo.T_APPOINT_DETAIL where recid like '27%';    #查询语句
+    log    ${A[0][0]}
+    ${B}    row count    select * from dbo.T_APPOINT_DETAIL where recid like '27%';
+    log    ${B}
+    disconnect from database
+
+list乱码验证
+    Comment    ${A}    create list    张三    李四
+    ${A}    create list    ("id",1)    ("name",2)
+    log    ${A[1]}
+
+芒果库数据库连接
+    Connect To MongoDB    192.168.102.151    27017
+    Comment    ${A}    Retrieve All Mongodb Records    efiles    da_filedescribes
+    ${B}    Retrieve some Mongodb Records    efiles    da_filedescribes    {"c_fid":"B97306FA39EB458489363CA6F656D321"}    {'c_filename':1}
+    log    ${B[0]['c_filename']}
+    Disconnect From Mongodb
+
+页面登录
+    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.4.2    deviceName=TWGDU17112001345    appPackage=com.z3425956719.ypq    appActivity=com.uzmap.pkg.EntranceActivity
+    ...    #打开APP(真机上打开）
+    Comment    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.4.2    deviceName=127.0.0.1:62001    appPackage=com.z3425956719.ypq
+    ...    appActivity=com.uzmap.pkg.EntranceActivity    #打开APP(模拟器上打开）
+    Comment    appPackage=com.tencent.mm    appActivity=.ui.LauncherUI
+    Comment    sleep    5
+    Comment    AppiumLibrary.input text    xpath=//android.view.View/android.widget.EditText[1]    daili
+    Comment    AppiumLibrary.Input Password    xpath=//android.view.View/android.widget.EditText[2]    123
+    AppiumLibrary.wait until element is visible    xpath=//android.view.View[@content-desc=\"最新消息\"]
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"业务办理\"]
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"场地预约\"]
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"预约\"]
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"\"]
+    sleep    2
+    Comment    AppiumLibrary.click element    xpath=//android.widget.ListView/android.widget.RadioButton[1]    #模拟器定位
+    AppiumLibrary.click element    xpath=//android.widget.RadioButton[@resource-id=\"radio_38B5AB5C-167F-2A05-9963-8DF7BAC1DA8E\"]    #真机定位
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"选择\"]
+    sleep    2
+    Comment    AppiumLibrary.input text    xpath=//android.widget.ListView/android.widget.EditText[2]    zhangsan    #模拟器定位
+    AppiumLibrary.input text    xpath=//android.widget.EditText[@resource-id=\"LINKMAN\"]    zhangsan    #真机定位
+    Comment    AppiumLibrary.input text    xpath=//android.widget.ListView/android.widget.EditText[3]    13131313131    #模拟器定位
+    AppiumLibrary.input text    xpath=//android.widget.EditText[@resource-id=\"LINKTEL\"]    13131313131    #真机定位
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"确定\"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.EditText[@content-desc=\"2019-02-16\"]
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"18\"]    #真机定位
+    Comment    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"清空确定\"]    #真机定位
+
+字典长度测试
+    ${headers}    create dictionary    Content-Type    application/x-www-form-urlencoded
+    ${length}    get length    ${headers}
+
+fetch from left/right 函数
+    ${string}    fetch from right    123ABCXABC456    AB
+    log    ${string}
+    ${string_1}    fetch from left    ${string}    5
+    log    ${string_1}
+    ${string_2}    fetch from right    ${string}    5
+    log    ${string_2}
+
+Generate Random String函数测试
+    ${A}    Generate Random String    4    [UPPER]
+
+注册接口调试
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_depts}    query    select deptname,deptno,roletype from t_depts where deptno='test011' and roletype='01'    #查询语句
+    log    ${t_depts[0][0]}
+    log    ${t_depts[0][1]}
+    log    ${t_depts[0][2]}
+    Comment    log    ${A[0][0]}
+    Comment    ${B}    row count    select * from dbo.T_APPOINT_DETAIL where recid like '27%';
+    Comment    log    ${B}
+    disconnect from database
+
+专家获取项目接口调试
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${login}    query    select a.pwd,b.idcard from t_proj_experts a, \ \ \ t_experts b where a.expertid = b.expertid and a.pwd is not null and b.idcard is not NULL;
+    ${count}    row count    select a.pwd,b.idcard from t_proj_experts a, \ \ \ t_experts b where a.expertid = b.expertid and a.pwd is not null and b.idcard is not NULL;
+
+dictionary函数调试
+    Comment    set suite variable    ${data_json}    {"idcard": "张三", "pws": "李四" }
+    Comment    ${data_dic}    json.loads    ${data_json}    #json格式转换为dic
+    Comment    ${B}    get from dictionary    ${data_dic}    idcard
+    Comment    ${c}    json.dumps    ${data_dic}    #字典格式转换为json
+    ${A}    get time

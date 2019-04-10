@@ -1,0 +1,13 @@
+*** Settings ***
+Resource          温馨提醒接口模板.txt
+
+*** Test Cases ***
+获取温馨提醒接口（参数串不为空）
+    [Documentation]    ${msg} ${note} ${fid} ${guid} ${info} ${projcls} ${projid} ${updatetime} ${userid}
+    [Template]    获取温馨提醒接口模板
+    成功    0    成功    好的    C61A856764BA3ED4953B0C0702253126    6h7e2f8a15103f09bfb48hju    test-评标软件-20190126项目的公告已经审核通过。
+    ...    5    314    20190326152900    58
+
+获取温馨提醒接口（参数窜为空）
+    [Template]    获取温馨提醒异常接口模板
+    参数错误!    -1

@@ -1,0 +1,24 @@
+*** Settings ***
+Resource          ../public.txt
+Resource          保存温馨提醒接口.txt
+
+*** Keywords ***
+获取温馨提醒接口模板
+    [Arguments]    ${result}    ${status}    ${msg}    ${note}    ${fid}    ${guid}
+    ...    ${info}    ${projcls}    ${projid}    ${updatetime}    ${userid}    ${SessionAlias}=BidEvaCom
+    ...    ${url}=common/saveBusiness
+    创建SESSION（公共）
+    ${data}    创建温馨提醒入参数据    ${msg}    ${note}    ${fid}    ${guid}    ${info}
+    ...    ${projcls}    ${projid}    ${updatetime}    ${userid}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${file_des}    出参sql    ${projid}
+    温馨提醒断言    ${content}    ${result}    ${status}    ${file_des}    ${msg}    ${note}
+    ...    ${fid}     ${guid}     ${info}    ${projcls}     ${projid}      ${updatetime}
+    ...    ${userid}
+
+获取温馨提醒异常接口模板
+    [Arguments]    ${result}    ${status}    ${SessionAlias}=BidEvaCom    ${url}=common/saveBusiness
+    创建SESSION（公共）
+    ${data}    创建温馨提醒异常数据
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    温馨提醒异常断言    ${content}    ${result}    ${status}

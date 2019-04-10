@@ -1,0 +1,40 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           Collections
+Library           Collections
+Library           MongoDBLibrary
+Library           json
+Library           string
+
+*** Keywords ***
+创建日志入参
+    [Arguments]    ${code1}    ${comid}    ${displayname}    ${errcode}    ${errmsg}    ${filetype}
+    ...    ${fileurl}    ${machineid}    ${name}    ${partid}    ${pdffilename}    ${projid}
+    ...    ${projname}
+    set suite variable    ${data}    {"jsonstr": { \ \ \ \ \ \ \ \ "code": "${code1}", \ \ \ \ \ \ \ \ "comid": "${comid}", \ \ \ \ \ \ \ \ "displayname": "${displayname}", \ \ \ \ \ \ \ \ "errcode": "${errcode}", \ \ \ \ \ \ \ \ "errmsg": "${errmsg}", \ \ \ \ \ \ \ \ "filetype": "${filetype}", \ \ \ \ \ \ \ \ "fileurl": "${fileurl}", \ \ \ \ \ \ \ \ "machineid": "${machineid}", \ \ \ \ \ \ \ \ "name": "${name}", \ \ \ \ \ \ \ \ "partid": "${partid}", \ \ \ \ \ \ \ \ "pdffilename": "${pdffilename}", \ \ \ \ \ \ \ \ "projid": "${projid}", \ \ \ \ \ \ \ \ "projname": "${projname}" \ \ \ \ }, \ \ \ \ "logtype": "101" \ \ \ \ }
+    [Return]    ${data}
+
+日志出参sql
+    [Arguments]    ${projid}
+    Connect To MongoDB    192.168.102.151    27017
+    Comment    ${datatime}    get time
+    ${file_des}    Retrieve some Mongodb Records    efiles    hy_eva_logs    {"loginfo.projid":"${projid}"}    sort({'_id':-1}
+    Disconnect From Mongodb
+    [Return]    ${file_des}
+
+日志断言
+    [Arguments]    ${content}    ${result}    ${status}    ${file_des}    ${code1}    ${displayname}
+    ...    ${errmsg}    ${filetype}    ${fileurl}    ${pdffilename}    ${projid}    ${projname}
+    ${code}    get from dictionary    ${content['data']}    code
+    ${message}    get from dictionary    ${content['data']}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    should be equal as strings    ${file_des[0]['loginfo']['code']}    ${code1}
+    should be equal as strings    ${file_des[0]['loginfo']['displayname']}    ${displayname}
+    should be equal as strings    ${file_des[0]['loginfo']['errmsg']}    ${errmsg}
+    should be equal as strings    ${file_des[0]['loginfo']['filetype']}    ${filetype}
+    should be equal as strings    ${file_des[0]['loginfo']['fileurl']}    ${fileurl}
+    should be equal as strings    ${file_des[0]['loginfo']['pdffilename']}    ${pdffilename}
+    should be equal as strings    ${file_des[0]['loginfo']['projid']}    ${projid}
+    should be equal as strings    ${file_des[0]['loginfo']['projname']}    ${projname}

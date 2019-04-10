@@ -1,0 +1,57 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           Collections
+Library           MongoDBLibrary
+Library           json
+Library           string
+
+*** Keywords ***
+创建温馨提醒入参数据
+    [Arguments]    ${msg}    ${note}    ${fid}    ${guid}    ${info}    ${projcls}
+    ...    ${projid}    ${updatetime}    ${userid}
+    set suite variable    ${data}    { \ \ \ \ "busiinfo": { \ \ \ \ "applyresult": { \ \ \ \ \ \ \ \ "applystate": 2, \ \ \ \ \ \ \ \ "code": "0", \ \ \ \ \ \ \ \ "msg": "${msg}", \ \ \ \ \ \ \ \ "note": "${note}", \ \ \ \ \ \ \ \ "result": "1", \ \ \ \ \ \ \ \ "state": 2 \ \ \ \ }, \ \ \ \ "applytype": "BulletinApply", \ \ \ \ "fid": "${fid}", \ \ \ \ "guid": "${guid}", \ \ \ \ "info": "${info}", \ \ \ \ "projcls": "${projcls}", \ \ \ \ "projid": "${projid}", \ \ \ \ "updatetime": "${updatetime}" }, "userid": "${userid}", \ \ \ \ "infotype": "1" }
+    [Return]    ${data}
+
+出参sql
+    [Arguments]    ${projid}
+    Connect To MongoDB    192.168.102.151    27017
+    Comment    ${datatime}    get time
+    ${file_des}    Retrieve some Mongodb Records    efiles    t_business_info    {"busiinfo.projid":"${projid}"}    sort({'_id':-1}
+    Disconnect From Mongodb
+    [Return]    ${file_des}
+
+温馨提醒断言
+    [Arguments]    ${content}    ${result}    ${status}    ${file_des}    ${msg}    ${note}
+    ...    ${fid}    ${guid}    ${info}    ${projcls}    ${projid}    ${updatetime}
+    ...    ${userid}
+    ${code}    get from dictionary    ${content['data']}    code
+    ${message}    get from dictionary    ${content['data']}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    should be equal as strings    ${file_des[0]['busiinfo']['applytype']}    BulletinApply
+    should be equal as strings    ${file_des[0]['busiinfo']['fid']}    ${fid}
+    should be equal as strings    ${file_des[0]['busiinfo']['guid']}    ${guid}
+    should be equal as strings    ${file_des[0]['busiinfo']['info']}    ${info}
+    should be equal as strings    ${file_des[0]['busiinfo']['projcls']}    ${projcls}
+    should be equal as strings    ${file_des[0]['busiinfo']['projid']}    ${projid}
+    should be equal as strings    ${file_des[0]['busiinfo']['updatetime']}    ${updatetime}
+    should be equal as strings    ${file_des[0]['userid']}    ${userid}
+    should be equal as strings    ${file_des[0]['infotype']}    1
+    should be equal as strings    ${file_des[0]['busiinfo']['applyresult']['applystate']}    2
+    should be equal as strings    ${file_des[0]['busiinfo']['applyresult']['code']}    0
+    should be equal as strings    ${file_des[0]['busiinfo']['applyresult']['msg']}    ${msg}
+    should be equal as strings    ${file_des[0]['busiinfo']['applyresult']['note']}    ${note}
+    should be equal as strings    ${file_des[0]['busiinfo']['applyresult']['result']}    1
+    should be equal as strings    ${file_des[0]['busiinfo']['applyresult']['state']}    2
+
+温馨提醒异常断言
+    [Arguments]    ${content}    ${result}    ${status}
+    ${code}    get from dictionary    ${content['data']}    code
+    ${message}    get from dictionary    ${content['data']}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+
+创建温馨提醒异常数据
+    set suite variable    ${data}    {}
+    [Return]    ${data}

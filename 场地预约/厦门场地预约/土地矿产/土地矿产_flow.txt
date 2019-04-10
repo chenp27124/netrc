@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          土地矿产_page.txt
+Resource          土地矿产(代理)_element.txt
+Resource          土地矿产（管理)_element.txt
+
+*** Keywords ***
+新增土地矿产项目流程
+    [Arguments]    ${code}    ${land_code}    ${land_name}
+    点击土地矿产项目菜单
+    点击新增土地项目
+    新增土地项目    ${code}    ${land_code}     ${land_name}

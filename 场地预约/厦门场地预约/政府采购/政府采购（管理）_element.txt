@@ -1,0 +1,23 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+点击业务办理--代办事项
+    click element    xpath=//*[@id="menu_"]/li[1]/a
+    click element    xpath=//*[@id="menu_"]/li[1]/ul/li[1]/a
+
+查询新增项目
+    [Arguments]    ${proj_name}
+    select frame    id=MainFrame
+    input text    id=searchtxt    ${proj_name}
+    click button    id=searchBtn
+
+审核项目
+    click element    xpath=//*[@id="1"]/td[2]/a[1]
+    unselect frame
+    select frame    xpath=//*[@name="govChkDo"]
+    input text    xpath=//*[@id="CHKNOTES"]    审核通过    #输入审核意见
+    unselect frame
+    click element    xpath=//*[@value="确认"]
+    send     {ENTER}

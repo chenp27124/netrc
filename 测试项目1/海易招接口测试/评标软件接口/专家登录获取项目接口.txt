@@ -1,0 +1,83 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           String
+Library           RequestsLibrary
+Library           Collections
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+Library           json
+
+*** Keywords ***
+创建session以及入参数据
+    [Arguments]    ${idCard}    ${pwd}    ${SessionAlias}=expertLogin    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    create session    ${SessionAlias}    ${URI}
+    set suite variable    ${data}    { \ \ \ \ "idcard": "${idCard}", \ \ \ \ "pws": "${pwd}" }
+    set suite variable    ${idCard}
+    set suite variable    ${pwd}
+    [Return]    ${data}    # 入参数据
+
+正常入参与sql值进行比对
+    [Arguments]    ${count_2}    ${login}    ${pwd}    ${idCard}
+    ${a_list}    create list
+    ${b_list}    create list
+    : FOR    ${i}    IN RANGE    ${count_2}
+    \    ${a}    set variable    ${login[${i}][0]}
+    \    ${b}    set variable    ${login[${i}][1]}
+    \    append to list    ${a_list}    ${a}
+    \    append to list    ${b_list}    ${b}
+    Should Not Contain    ${a_list}    ${pwd}
+    Should Not Contain    ${b_list}    ${idCard}
+
+异常入参与sql进行比对
+    [Arguments]    ${count_2}    ${login}    ${pwd}    ${idCard}
+    ${a_list}    create list
+    ${b_list}    create list
+    : FOR    ${i}    IN RANGE    ${count_2}
+    \    ${a}    set variable    ${login[${i}][0]}
+    \    ${b}    set variable    ${login[${i}][1]}
+    \    append to list    ${a_list}    ${a}
+    \    append to list    ${b_list}    ${b}
+    Should Not Contain    ${a_list}    ${pwd}
+    Should Not Contain    ${b_list}    ${idCard}
+
+成功断言
+    [Arguments]    ${content}    ${result}    ${status}    ${logout}    ${paramvalue}
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    ${resp}    get from dictionary    ${content}    data
+    ${values}    Get Dictionary Values    ${resp}
+    should be equal as strings    ${values[0]}    ${logout[0][1]}
+    should be equal as strings    ${values[1]}    ${paramvalue[0][0] }
+    should be equal as strings    ${values[2]}    http://192.168.102.151/Review/OneClickLogin
+    should be equal as strings    ${values[4]}    ${logout[0][0]}
+    should be equal as strings    ${values[5]}    ${logout[0][2]}
+
+异常断言
+    [Arguments]    ${content}    ${result}    ${status}
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+
+未设置评审时间断言
+    [Arguments]    ${content}    ${result}    ${status}    ${logout}
+    should be equal as strings    ${logout[0][3]}    None
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+
+尚未到评审时间断言
+    [Arguments]    ${content}    ${result}    ${status}    ${logout}
+    ${A}    get time
+    should be true    '${A}'<'${logout[0][3]}'
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+
+断开session
+    delete all sessions

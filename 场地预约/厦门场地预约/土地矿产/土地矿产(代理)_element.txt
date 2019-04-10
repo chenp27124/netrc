@@ -1,0 +1,64 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+点击土地矿产项目菜单
+    click element    xpath=//*[@id="menu_"]/li[5]/a
+    click element    xpath=//*[@id="menu_"]/li[5]/ul/li[1]/a
+
+点击新增土地项目
+    select frame    id=MainFrame
+    click element    xpath=//*[@id="add"]
+    unselect frame
+
+公共号
+    [Arguments]    ${code}
+    select frame    xpath=//*[@name="MenuAdd"]
+    input text    xpath=//*[@id="ANNOUNCEMENT_CODE"]    ${code}
+
+土地编号
+    [Arguments]    ${land_code}
+    input text    xpath=//*[@id="LAND_CODE"]    ${land_code}
+
+项目简称
+    [Arguments]    ${land_name}
+    input text    id=LAND_PROJECT_NAME    ${land_name}
+
+土地位置
+    input text    id=LAND_POSITION    观日路
+
+土地用途
+    input text    id=LAND_USAGE    商业
+
+土地面积
+    input text    id=LAND_AREA    100
+
+建筑面积
+    input text    id=BUILD_AREA    10
+
+出让年限
+    input text    id=LEND_AGE_LIMIT    2
+
+出让方式
+    select from list by value    id=TD_IN_BUY_KIND    2
+
+经办人和联系电话
+    input text    id=START_PRICE    1
+    input text    id=CONTACT_PERSON    张三
+    input text    id=CONTACT_NUMBER    13456789012
+
+批文文件
+    click element    xpath=//*[@value="上传"]    #点击上传（附件）按钮
+    unselect frame
+    select frame    xpath=//*[@name="ProjUploadFile"]
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr/td/input[3]    #点击（上传附件）弹框页面的上传按钮
+    Comment    AutoItLibrary.Run    项目备案凭证.exe
+    win wait    打开
+    win active    打开
+    Control Set Text    \    \    Edit1    E:\\RF\\bidfile\\招标公告.doc
+    Control Click    \    \    Button1
+    sleep    2
+    unselect frame
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击保存按钮
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击提交按钮

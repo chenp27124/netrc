@@ -1,0 +1,19 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+获取采购项目编号的值
+    [Arguments]    ${proj_name}
+    focus    xpath=//*[@id="menu_"]/li[4]/a
+    click element    xpath=//*[@id="menu_"]/li[4]/a    #点击政府采购菜单
+    click element    xpath=//*[@id="menu_"]/li[4]/ul/li[1]/a    #点击采购项目管理菜单
+    sleep    2
+    select frame    id=MainFrame
+    input text    id=searchProjectName    ${proj_name}
+    click element    id=searchBtn
+    sleep    2
+    ${A}    get text    xpath=//*[@id="tenderList"]/tbody/tr[2]/td[9]/a
+    should be equal    ${proj_name}    ${A}
+    ${result}    get text    xpath=//*[@id="tenderList"]/tbody/tr[2]/td[13]
+    should be equal     ${result}    待审核
+    [Teardown]

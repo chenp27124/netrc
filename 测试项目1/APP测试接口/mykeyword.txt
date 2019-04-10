@@ -1,0 +1,51 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           requests
+Library           json
+Library           Collections
+Library           DatabaseLibrary
+Library           MongoDBLibrary
+Resource          sql查询.txt
+
+*** Keywords ***
+创建session
+    [Arguments]    ${alis}    ${URL}
+    create session    ${alis}    ${URL}
+
+创建入参数据
+    [Arguments]    ${projname}    ${bidcode}    ${projtype}    ${bidtype}
+    set suite variable    ${data}    { \ \ \ \ "projname": "${projname}", \ \ \ \ "bidcode": "${bidcode}", \ \ \ \ "projtype": "${projtype}", \ \ \ \ "bidtype": "${bidtype}", \ \ \ \ "pageindex": "1", \ \ \ \ "pagesize": "10" }
+
+创建数据头
+    ${header}    create dictionary    Content-Type    application/json    charset='gbk'
+    set suite variable    ${header}
+
+使用post请求
+    [Arguments]    ${alis}    ${URI}
+    ${resp}    post request    ${alis}    ${URI}    data=${data}    headers=${header}
+    set suite variable    ${resp}
+
+请求状态断言
+    should be equal as strings    ${resp.status_code}    200
+
+结果转为json格式
+    ${resp_result}    To Json    ${resp.content}
+    set suite variable    ${resp_result}
+
+结果断言
+    ${errorno}    get from dictionary    ${resp_result}    errorno
+    should be equal as strings    ${errorno}    0
+    ${errormsg}    get from dictionary    ${resp_result}    errormsg
+    should be equal as strings    ${errormsg}    成功
+    ${datas}    get from dictionary    ${resp_result}    datas
+    ${keys}    get dictionary keys    ${datas[0]}
+    ${values}    get dictionary values    ${datas[0]}
+    app_getprojs_sql查询
+    :FOR    ${num}    IN RANGE    10
+    \    ${list_search}    convert to list    ${A[${num}]}
+    \    ${list_response}    get dictionary values    ${datas[${num}]}
+    \    ${status_list}    run keyword and return status    lists should be equal    ${list_search}    ${list_response}
+
+删除session
+    delete all sessions

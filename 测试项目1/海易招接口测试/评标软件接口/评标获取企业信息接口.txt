@@ -1,0 +1,89 @@
+*** Settings ***
+Library           Selenium2Library
+Library           String
+Library           RequestsLibrary
+Library           Collections
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+Library           json
+
+*** Keywords ***
+创建入参数据
+    [Arguments]    ${projId}
+    set suite variable    ${data}    { \ \ \ \ "projid": "${projId}", \ \ \ \ "pagei": "1" }
+    [Return]    ${data}
+
+成功获取企业信息sql
+    [Arguments]    ${projId}
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_proj}    query    select projname,projid from t_projects where projid=${projId};    #查询语句（项目表）
+    ${t_proj_unit}    query    select bidid,comname,signno,projid from t_proj_units where state=5 and bidstate=1 and \ projid=${projId};    #收标记录/申请记录
+    ${count_unit}    row count    select bidid,comname,signno,projid from t_proj_units where state=5 and bidstate=1 and \ projid=${projId};
+    ${t_proj_part}    query    select a.bidid,c.partid,c.partname,c.partcode, b.pdffile as pdffilename, isnull(a.projid,0) projid,isnull(a.signno,'') signno from t_proj_units a \ left outer join t_proj_parts b on a.bidid=b.bidid left outer join t_parts c on c.partid=b.partid where a.projid=${projId} and a.bidid=${t_proj_unit[0][0]} \ and a.state=5 and a.bidstate=1 order by a.bidid,b.partid;    #获取评标企业各个分部节点的投标文件-bidinfo.parts数组
+    ${count_part}    row count    select a.bidid,c.partid,c.partname,c.partcode, b.pdffile as pdffilename, isnull(a.projid,0) projid,isnull(a.signno,'') signno from t_proj_units a \ left outer join t_proj_parts b on a.bidid=b.bidid left outer join t_parts c on c.partid=b.partid where a.projid=${projId} and a.bidid=${t_proj_unit[0][0]} \ and a.state=5 and a.bidstate=1 order by a.bidid,b.partid;
+    ${t_files}    query    select b.bidid, isnull(a.partId,0) partId,isnull(fi.filename,'') fileName, isnull(fi.displayname,'') displayName,isnull(b.projid,0) projId, isnull(b.signno,'') signNo,isnull(fi.partname,'附件') partName \ from t_proj_parts_files fi \ left outer join t_proj_parts a on fi.rid=a.rid \ left outer join t_proj_units b on a.bidid=b.bidid \ where b.bidstate=1 and state=5 and b.isok=1 \ and projid=${projId} and fi.par_partid =${t_proj_part[0][1]} order by fi.fid;    #获取投标文件相关的附件信息-bidinfo.parts.files数组
+    ${file_count}    row count    select b.bidid, isnull(a.partId,0) partId,isnull(fi.filename,'') fileName, isnull(fi.displayname,'') displayName,isnull(b.projid,0) projId, isnull(b.signno,'') signNo,isnull(fi.partname,'附件') partName \ from t_proj_parts_files fi \ left outer join t_proj_parts a on fi.rid=a.rid \ left outer join t_proj_units b on a.bidid=b.bidid \ where b.bidstate=1 and state=5 and b.isok=1 \ and projid=${projId} and fi.par_partid =${t_proj_part[0][1]} order by fi.fid;
+    disconnect from database
+    [Return]    ${t_proj}    ${t_proj_unit}    ${count_unit}    ${t_proj_part}    ${count_part}    ${t_files}
+    ...    ${file_count}
+
+断言以及sql数据比对
+    [Arguments]    ${content}    ${result}    ${status}    ${t_proj}    ${projId}
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    ${resp_1}    get from dictionary    ${content}    data    #5-12行为data中的projname和projid数据核对
+    ${keys}    get dictionary keys    ${resp_1}
+    should contain    ${keys}    bidinfo
+    should contain    ${keys}    pagei
+    should contain    ${keys}    projid
+    should contain    ${keys}    projname
+    should be equal    ${resp_1['projname']}    ${t_proj[0][0]}
+    should be equal    str(${resp_1['projid']})    str(${t_proj[0][1]})
+    Comment    log    ${resp_1['bidinfo'][0]}
+    ${bidinfo_keys}    get dictionary keys    ${resp_1['bidinfo'][0]}    #14-22为获取评标企业信息-data.bidinfo数组
+    should contain    ${bidinfo_keys}    bidid
+    should contain    ${bidinfo_keys}    comname
+    should contain    ${bidinfo_keys}    parts
+    should contain    ${bidinfo_keys}    signno
+    : FOR    ${i}    IN RANGE    ${count_unit}
+    \    should be equal    str(${resp_1['bidinfo'][${i}]['bidid']})    str(${t_proj_unit[${i}][0]})
+    \    should be equal    ${resp_1['bidinfo'][${i}]['comname']}    ${t_proj_unit[${i}][1]}
+    \    should be equal    ${resp_1['bidinfo'][${i}]['signno']}    ${t_proj_unit[${i}][2]}
+    \    log    ${resp_1['bidinfo'][0]['parts'][0]}
+    ${pars_keys}    get dictionary keys    ${resp_1['bidinfo'][0]['parts'][0]}    #24-37获取评标企业各个分部节点的投标文件-bidinfo.parts数组
+    should contain    ${pars_keys}    code
+    should contain    ${pars_keys}    datas
+    should contain    ${pars_keys}    id
+    should contain    ${pars_keys}    name
+    should contain    ${pars_keys}    pdffilename
+    should contain    ${pars_keys}    pdfurl
+    : FOR    ${j}    IN RANGE    ${count_part}
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][${j}]['code']}    ${t_proj_part[${j}][3]}
+    \    should be equal    str(${resp_1['bidinfo'][0]['parts'][${j}]['id']})    str(${t_proj_part[${j}][1]})
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][${j}]['pdffilename']}    ${t_proj_part[${j}][4]}
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][${j}]['name']}    ${t_proj_part[${j}][2]}
+    \    ${part_url}    catenate    SEPARATOR=    http://192.168.102.151:80/downtemp/cab100099/Decryptfile/    /${projId}    /${resp_1['bidinfo'][0]['signno']}
+    \    ...    /${resp_1['bidinfo'][0]['parts'][${j}]['pdffilename']}
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][${j}]['pdfurl']}    ${part_url}
+    \    log    ${resp_1['bidinfo'][0]['parts'][0]['datas'][0]}
+    ${file_keys}    get dictionary keys    ${resp_1['bidinfo'][0]['parts'][0]['datas'][0]}    #39-47获取投标文件相关的附件信息-bidinfo.parts.files数组
+    should contain    ${file_keys}    displayname
+    should contain    ${file_keys}    filename
+    should contain    ${file_keys}    fileurl
+    : FOR    ${k}    IN RANGE    ${file_count}
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][0]['datas'][${k}]['displayname']}    ${t_files[${k}][3]}
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][0]['datas'][${k}]['filename']}    ${t_files[${k}][2]}
+    \    ${file_url}    catenate    SEPARATOR=    http://192.168.102.151:80/downtemp/cab100099/Decryptfile/    /${projId}    /${resp_1['bidinfo'][0]['signno']}
+    \    ...    /${resp_1['bidinfo'][0]['parts'][0]['datas'][${k}]['filename']}
+    \    should be equal    ${resp_1['bidinfo'][0]['parts'][0]['datas'][${k}]['fileurl']}    ${file_url}
+
+获取企业信息-异常断言
+    [Arguments]    ${content}    ${result}    ${status}    ${error_1}
+    ${code}    get from dictionary    ${content}    error_code
+    ${message}    get from dictionary    ${content}    result
+    ${error}    get from dictionary    ${content}    error
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    should be equal as strings    ${error}    ${error_1}

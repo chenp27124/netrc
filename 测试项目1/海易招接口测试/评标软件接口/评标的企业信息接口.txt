@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          评标软件接口模板.txt
+
+*** Test Cases ***
+成功获取企业信息
+    [Template]    成功获取企业信息模板
+    293    成功    0
+
+获取企业信息-proid为空
+    [Template]    获取企业信息-异常模板
+    \    False    2001    系统错误:Index: 0, Size: 0

@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          flow_fw.txt
+Resource          element_fw.txt
+
+*** Variables ***
+${projname}       20181222-test-S215线K163+240~K166+240及K181+650~K185+300段路面改造工程     # 项目名称
+
+*** Test Cases ***
+公共服务登录
+    登录流程1
+
+业务办理
+    业务办理流程
+
+场地预约审核
+    场地预约审核流程

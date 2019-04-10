@@ -1,0 +1,20 @@
+*** Settings ***
+Library           DatabaseLibrary
+
+*** Keywords ***
+正常注册sql查询
+    [Arguments]    ${entcode}    ${role_1}    ${role_2}    ${account}
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_depts}    query    select deptname,deptno from t_depts where deptno='${entcode}' and roletype='${role_1},${role_2}';    #查询语句
+    set suite variable    ${t_depts}
+    ${t_manager}    query    select account,pwd,username,email,mobile from t_manager where account='${account}';
+    set suite variable    ${t_manager}
+    ${count}    row count    select a.uid,a.group_id from t_auth_group_access a,t_manager \ b where a.uid=b.userid and b.account='${account}';
+    set suite variable    ${count}
+    ${count_1}    row count    SELECT a.deptid,a.uid from t_dept_users a,t_depts b,t_manager c where a.deptid=b.deptid and a.uid=c.userid and b.deptno='${entcode}';
+    set suite variable    ${count_1}
+    Comment    log    ${A[0][0]}
+    Comment    ${B}    row count    select * from dbo.T_APPOINT_DETAIL where recid like '27%';
+    Comment    log    ${B}
+    disconnect from database
+    [Return]    ${t_depts}    ${t_manager}    ${count}    ${count_1}    # 注册接口法人和自然人表中deptname,deptno字段;用户表;用户角色表记录数;部门用户表记录数

@@ -1,0 +1,27 @@
+*** Settings ***
+Resource          ../public.txt
+Resource          获取ca类型.txt
+
+*** Keywords ***
+CA类型接口模板
+    [Arguments]    ${proid}    ${status}    ${url}=varDefInter/getProjCaType
+    创建SESSION（公共）
+    ${param}    创建params    ${proid}
+    ${content}    get请求    ${url}    ${param}
+    ${t_cattype}    ${count}    成功获取CA类型sql
+    断言以及CA类型数据sql比对    ${content}    ${status}    ${count}    ${t_cattype}
+
+CA类型接口（pro值存在）模板
+    [Arguments]    ${proid}    ${status}    ${url}=varDefInter/getProjCaType
+    创建SESSION（公共）
+    ${param}    创建params    ${proid}
+    ${content}    get请求    ${url}    ${param}
+    ${t_proj_cattype}    ${count1}    成功获取ＣＡ类型sql(proid值存在）    ${proid}
+    断言以及sql(proid存在）对比    ${content}    ${status}    ${count1}    ${t_proj_cattype}
+
+CA类型接口（pro值为空）模板
+    [Arguments]    ${proid}    ${errorno}    ${errormsg}    ${url}=varDefInter/getProjCaType
+    创建SESSION（公共）
+    ${param}    创建params    ${proid}
+    ${content}    get请求    ${url}    ${param}
+    断言    ${content}     ${errorno}    ${errormsg}

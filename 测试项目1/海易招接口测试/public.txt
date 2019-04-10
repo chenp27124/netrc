@@ -1,0 +1,40 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           AutoItLibrary
+Library           Collections
+Library           String
+Library           ExcelLibrary
+Library           requests
+Library           json
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+
+*** Keywords ***
+创建SESSION（公共）
+    [Arguments]    ${SessionAlias}=BidEvaCom    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    create session    ${SessionAlias}    ${URI}
+
+post请求
+    [Arguments]    ${SessionAlias}    ${url}    ${data}
+    [Documentation]    返回接口内容
+    ${headers}    create dictionary    Content-Type    application/json    charset='gbk'    #创建数据头
+    set suite variable    ${headers}
+    ${resp}    post request    ${SessionAlias}    ${url}    data=${data}    headers=${headers}
+    should be equal as strings    ${resp.status_code}    200
+    ${content}    to json    ${resp.content}
+    set suite variable    ${content}
+    [Return]    ${content}    # 接口返回值
+
+get请求
+    [Arguments]    ${url}    ${param}    ${SessionAlias}=BidEvaCom
+    ${headers}    create dictionary    Content-Type    application/json    charset='gbk'    #创建数据头
+    set suite variable    ${headers}
+    ${resp}    get request    ${SessionAlias}    ${url}    headers=${headers}    params=${param}
+    should be equal as strings    ${resp.status_code}    200
+    ${content}    to json    ${resp.content}
+    set suite variable    ${content}
+    [Return]    ${content}
+
+断开SESSION（公共）
+    delete all sessions

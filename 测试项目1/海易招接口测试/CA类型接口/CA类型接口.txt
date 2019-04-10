@@ -1,0 +1,21 @@
+*** Settings ***
+Resource          获取ca类型接口模板.txt
+Resource          ../public.txt
+Resource          获取CA类型.txt
+
+*** Test Cases ***
+获取CA类型接口（proid=0)
+    [Template]    CA类型接口模板
+    0    0
+
+获取CA类型接口（proid不存在）
+    [Template]    CA类型接口模板
+    123    0
+
+获取CA类型接口（proid值存在）
+    [Template]    CA类型接口（pro值存在）模板
+    657    0
+
+获取CA类型接口（proid为空）
+    [Template]    CA类型接口（pro值为空）模板
+    \    9    参数错误（6037）

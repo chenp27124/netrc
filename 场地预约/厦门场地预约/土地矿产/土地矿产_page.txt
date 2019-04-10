@@ -1,0 +1,18 @@
+*** Settings ***
+Resource          土地矿产（管理)_element.txt
+Resource          土地矿产(代理)_element.txt
+
+*** Keywords ***
+新增土地项目
+    [Arguments]    ${code}    ${land_code}    ${land_name}
+    公共号    ${code}
+    土地编号    ${land_code}
+    项目简称    ${land_name}
+    土地位置
+    土地用途
+    土地面积
+    建筑面积
+    出让年限
+    出让方式
+    经办人和联系电话
+    批文文件

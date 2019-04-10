@@ -1,0 +1,118 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+点击采购项目菜单
+    focus    xpath=//*[@id="menu_"]/li[4]/a
+    click element    xpath=//*[@id="menu_"]/li[4]/a    #点击政府采购菜单
+    click element    xpath=//*[@id="menu_"]/li[4]/ul/li[1]/a    #点击采购项目管理菜单
+
+点击新增采购项目按钮
+    select frame    id=MainFrame
+    click element    xpath=//*[@id="add"]
+    unselect frame
+
+采购项目编号
+    [Arguments]    ${proj_no}
+    select frame    xpath=//*[@name="MenuAdd"]
+    input text    xpath=//*[@id="PURCHASE_PROJECT_CODE"]    ${proj_no}
+
+采购项目名称
+    [Arguments]    ${proj_name}
+    input text    xpath=//*[@id="PURCHASE_PROJECT_NAME"]    ${proj_name}
+
+项目来源
+
+采购代理名称
+
+预算金额
+    input text    xpath=//*[@id="PROGRAM_BUDGET"]    100
+
+联系人
+    input text    xpath=//*[@id="PURCHASER_AGENCY_CONNECTOR"]    张三
+
+联系人手机号码
+    input text    xpath=//*[@id="PURCHASER_AGENCY_INFORMATION"]    13456789012
+
+项目类型
+    [Arguments]    ${proj_type}
+    select from list by value    id=TENDER_PROJECT_TYPE    ${proj_type}
+
+组织形式
+    [Arguments]    ${org_form}
+    select from list by value    id=PURCHASER_ORGANIZE_FORM    ${org_form}
+
+采购方式
+    [Arguments]    ${buy_mode}
+    focus    id=PURCHASER_MODE
+    select from list by value    id=PURCHASER_MODE    ${buy_mode}
+
+项目备案凭证
+    click element    xpath=//*[@value="上传"]    #点击上传（附件）按钮
+    unselect frame
+    select frame    xpath=//*[@name="ProjUploadFile"]
+    click element    xpath=//*[@id="con-tab"]/div/table/tbody/tr/td/input[3]    #点击（上传附件）弹框页面的上传按钮
+    sleep    2
+    Comment    AutoItLibrary.Run    项目备案凭证.exe
+    win wait    打开
+    win active    打开
+    Control Set Text    \    \    Edit1    E:\\RF\\bidfile\\招标公告.doc
+    Control Click    \    \    Button1
+    sleep    2
+    unselect frame
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击保存按钮
+    click element    xpath=/html/body/div[2]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击提交按钮
+
+新增项目成功校验
+    [Arguments]    ${proj_name}
+    sleep    2
+    select frame    id=MainFrame
+    input text    id=searchProjectName    ${proj_name}
+    click element    id=searchBtn
+    sleep    2
+    ${pro_name}    get text    xpath=//*[@id="tenderList"]/tbody/tr[2]/td[9]/a
+    should be equal    ${proj_name}    ${pro_name}
+    ${result}    get text    xpath=//*[@id="tenderList"]/tbody/tr[2]/td[13]
+    should be equal    ${result}    待审核
+    unselect frame
+
+采购人
+    input text    id=PURCHASER_NAME    王五
+
+点击场地预约管理菜单
+    sleep    2
+    focus    xpath=//*[@id="menu_"]/li[4]/a
+    click element    xpath=//*[@id="menu_"]/li[4]/a    #点击政府采购菜单
+    sleep    1
+    click element    xpath=//*[@id="menu_"]/li[4]/ul/li[2]/a    #点击场地管理菜单
+
+点击新增预约按钮
+    sleep    2
+    select frame    id=MainFrame
+    click element    xpath=//*[@id="add"]
+    unselect frame
+
+选择采购项目
+    [Arguments]    ${proj_name}
+    select frame    xpath=//*[@name="addAppoint"]
+    click element    id=RegisterPro    #点击选择按钮
+    unselect frame
+    select frame    xpath=//*[@name="selectPro"]
+    input text    id=projname    ${proj_name}    #输入项目名称
+    click element    id=searchBtn1    #点击查询按钮
+    click element    id=1    #选择查询列表的记录
+    unselect frame
+    send    ^{NUMPADSUB} \ \
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击确定按钮
+
+输入联系人和联系电话
+
+选择用途和场所（开评标或谈判磋商）
+
+新增预约成功校验
+    [Arguments]    ${proj_name}
+    sleep    2
+    select frame    id=MainFrame
+    input text    id=proname    ${proj_name}
+    click element    id=searchBtn

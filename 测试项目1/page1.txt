@@ -1,0 +1,82 @@
+*** Settings ***
+Resource          element1.txt
+
+*** Keywords ***
+登录
+    [Arguments]    ${name}    ${pwd}
+    用户名    ${name}
+    密码    ${pwd}
+    登录按钮
+
+登录检查
+    检查成功断言
+
+查找项目
+    [Arguments]    ${url}    ${BID_NAME}
+    打开浏览器    ${url}
+    输入招标信息    ${BID_NAME}
+    选择招标类型
+    选择交易分类
+    查找
+
+我要报名
+    点击我要报名l链接
+    Comment    联系人
+    订单详情
+    投标人联系人手机
+    Comment    点击报名按钮
+    支付方式
+    确认下单
+
+项目信息
+    [Arguments]    ${projName}    ${bidCode}
+    项目名称    ${projName}
+    项目编号    ${bidCode}
+    招标项目类型
+    招标方式和形式
+    项目属地和详细地址
+
+招标人信息
+    招标人和招标人代码
+    Comment    招标人代码    ${code}
+
+平台选择
+    是否采用电子标
+    报名方式
+    Comment    招标资料费
+    是否推广项目
+
+前附表数据
+    [Arguments]    ${signupendtime}    ${stoptime}    ${opentime}    ${openaddr}
+    是否组织考察
+    报名截止时间    ${signupendtime}
+    投标截止时间    ${stoptime}
+    投标有效期
+    评标方法
+    开标时间    ${opentime}
+    开标地点    ${openaddr}
+    Comment    解标时长
+    解密截止时间
+    Comment    投标银行
+
+项目组
+    Comment    项目经理
+    Comment    项目助理
+
+发布公告、招标文件
+    导入招标公告并盖章
+    Comment    导入招标文件并盖章
+    Comment    保存并发布按钮
+
+进入开标大厅
+    读取CA信息弹框
+    输入报名号
+    输入密码
+    点击”立即签到"按钮
+    点击“下一环节"按钮
+
+点击“组建专家委员会”链接
+    点击组建专家和“新增指定专家”按钮
+    类别
+    专家名称
+    证件号码并保存返回

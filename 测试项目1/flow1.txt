@@ -1,0 +1,59 @@
+*** Settings ***
+Resource          page1.txt
+Resource          element1.txt
+
+*** Keywords ***
+登录流程
+    [Arguments]    ${url}    ${name}    ${pwd}
+    打开浏览器    ${url}
+    登录    ${name}    ${pwd}
+    登录检查
+    Comment    open excel    E:\\RF\\bidfile\\海易招登录.xls
+    Comment    ${row_count}    get row count    Sheet1    #${row_count}为行数
+    Comment    @{read_columna}    get column values    Sheet1    0    #第一列的所有值
+    Comment    @{read_columnb}    get column values    Sheet1    1    #第二列的所有值
+    Comment    : FOR    ${X}    IN RANGE    ${row_count}
+    Comment    \    ${name}    set variable    ${read_columna[${X}][1]}
+    Comment    \    ${pwd}    set variable    ${read_columnb[${X}][1]}
+    Comment    \    登录    ${name}    ${pwd}
+
+项目信息流程
+    [Arguments]    ${projName}    ${bidCode}    ${signupendtime}    ${stoptime}    ${opentime}    ${openaddr}
+    点击菜单和发布按钮
+    项目信息    ${projName}    ${bidCode}
+    招标人信息
+    平台选择
+    前附表数据    ${signupendtime}    ${stoptime}    ${opentime}    ${openaddr}
+    Comment    项目组
+    点击下一步按钮
+
+标段流程
+    点击标段操作按钮
+    输入标段内容
+    输入发标价
+    输入投标保证金
+    点击标段保存按钮
+
+发布公告和招标流程
+    Comment    点击菜单并进入项目
+    Comment    点击发布公告链接
+    发布公告、招标文件
+
+点击项目链接流程
+    [Arguments]    ${url}    ${BID_NAME}
+    查找项目    ${url}    ${BID_NAME}
+    点击项目链接    ${BID_NAME}
+
+报名流程
+    Comment    查找项目    ${url}    ${BID_NAME}
+    Comment    点击项目链接    ${BID_NAME}
+    我要报名
+
+进入开标大厅流程
+    点击“开标大厅"按钮
+    进入开标大厅
+
+评标流程
+    点击菜单并进入项目
+    点击“组建专家委员会”链接
+    Comment    上传评审报告

@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          flow.txt
+Resource          sql查询.txt
+
+*** Test Cases ***
+app_getProjs_post
+    [Template]    查询项目模板
+    get_projs    http://192.168.102.143:8090    \    \    \    \    /XmBizRestForApp/webservice/app/getProjs
+
+app_getProjs_post_projname
+    [Template]    查询项目模板
+    get_projs    http://192.168.102.143:8090    测试    \    \    \    /XmBizRestForApp/webservice/app/getProjs
+
+数据库查询
+    app_getprojs_sql查询

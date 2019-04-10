@@ -1,0 +1,17 @@
+*** Settings ***
+Resource          日志接口.txt
+Resource          ../public.txt
+
+*** Keywords ***
+软件操作日志接口模板
+    [Arguments]    ${result}    ${status}    ${code1}    ${comid}    ${displayname}    ${errcode}
+    ...    ${errmsg}    ${filetype}    ${fileurl}    ${machineid}    ${name}    ${partid}
+    ...    ${pdffilename}    ${projid}    ${projname}    ${SessionAlias}=BidEvaCom    ${url}=common/saveDoLogs
+    创建SESSION（公共）
+    ${data}    创建日志入参    ${code1}    ${comid}    ${displayname}    ${errcode}    ${errmsg}
+    ...    ${filetype}    ${fileurl}    ${machineid}    ${name}    ${partid}    ${pdffilename}
+    ...    ${projid}    ${projname}
+    ${content}    post请求    ${SessionAlias}    ${url}    ${data}
+    ${file_des}    日志出参sql    ${projid}
+    日志断言    ${content}     ${result}    ${status}    ${file_des}    ${code1}     ${displayname}
+    ...    ${errmsg}    ${filetype}    ${fileurl}    ${pdffilename}     ${projid}    ${projname}

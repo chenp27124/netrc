@@ -1,0 +1,109 @@
+*** Settings ***
+Resource          element_jy.txt
+Resource          element_hs.txt
+
+*** Keywords ***
+登录页面
+    输入用户名
+    输入密码
+    点击登录按钮
+
+招标项目信息
+    [Arguments]    ${projCode}
+    选择”交易中心”
+    选择“是否依法招标”
+    项目报建编号
+    招标项目编号    ${projCode}
+    招标项目名称
+    招标人名称
+    联系手机
+    招标方式
+    保证金缴交方式
+    项目组成员
+
+项目信息
+    Comment    项目编号
+    公共资源交易分类
+    项目名称
+    项目所在行政区域
+    项目行业分类代码
+    项目地址
+    资金来源
+
+上传文件
+    点击“上传文件”
+    文件类型
+    Comment    文件标题
+    点击浏览按钮
+    上传文件并保存
+
+场地预约页面
+    [Arguments]    ${start_time}    ${end_time}
+    场地预约-招标项目名称
+    选择招标项目名称
+    Comment    预约类别
+    预约开始和截止时间    ${start_time}    ${end_time}
+    场地
+    联系人
+    联系人手机-预约
+    保存并提交申请（预约）
+
+招标项目信息（红色）
+    [Arguments]    ${projcode}    ${projName}
+    招标项目编号（红色）    ${projcode}
+    招标项目名称（红色）    ${projName}
+    招标人名称（红色）
+    代理联系手机
+    招标方式（红色）
+    Comment    项目组成员（红色）    #建设有次元素，交通没有
+
+项目信息（红色）
+    [Arguments]    ${type}
+    交易分类    ${type}
+    项目名称（红色）
+    区域代码
+    行业分类
+    地址
+    来源
+
+上传文件（红色）
+    选择文件
+    Comment    选择文件上传
+    保存并提交
+
+招标建档
+    [Arguments]    ${class}    ${bidmind}
+    点击”招标建档"按钮
+    项目类型
+    专业类别    ${class}
+    招标组织形式
+    资格审查方式
+    是否接受联合投标
+    招标次数
+    Comment    交易场所
+    审核部门名称
+    监督部门名称
+    Comment    工程类别
+    Comment    标段数量
+    评标办法    ${bidmind}
+    点击确定按钮
+
+招标具体信息
+    项目备案编号
+
+标段包
+    分类
+    合同估算价
+    质量要求
+    工期要求
+    Comment    控制价
+    标段包内容
+    投资人资格条件
+
+招标时间和场所
+    Comment    开标截止时间
+    Comment    报名开始时间    ${sign_start_time}
+    Comment    报名截止时间    ${sign_end_time}
+    Comment    投标文件递交截止时间    ${bid_end_time}
+    Comment    投标保证金截止时间    ${bail_end_time}
+    投标有效期

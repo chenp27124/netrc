@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          评标软件接口模板.txt
+
+*** Test Cases ***
+获取下载文件_roomid为空
+    [Template]    获取下载文件模板1
+    \    \    成功    0
+
+获取下载文件_roomid匹配不上
+    [Template]    获取下载文件模板1
+    deptid_222_002    deptid_122_002    成功    0
+
+获取下载文件_roomid可以匹配上
+    [Template]    获取下载文件模板2
+    deptid_222_001    deptid_76_002    成功    0    #2间都能匹配上

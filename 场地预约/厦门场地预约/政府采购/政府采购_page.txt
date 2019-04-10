@@ -1,0 +1,26 @@
+*** Settings ***
+Resource          政府采购（代理）_element.txt
+Resource          政府采购（管理）_element.txt
+
+*** Keywords ***
+新增采购项目
+    [Arguments]    ${proj_no}    ${proj_name}    ${proj_type}    ${org_form}    ${buy_mode}
+    采购项目编号    ${proj_no}
+    采购项目名称    ${proj_name}
+    Comment    项目来源
+    采购人
+    Comment    采购代理名称
+    预算金额
+    联系人
+    联系人手机号码
+    项目类型    ${proj_type}
+    组织形式    ${org_form}
+    采购方式    ${buy_mode}
+    项目备案凭证
+    新增项目成功校验    ${proj_name}
+
+新增政府采购预约
+    [Arguments]    ${proj_name}
+    选择采购项目    ${proj_name}
+    Comment    输入联系人和联系电话
+    Comment    选择用途和场所（开评标或谈判磋商）

@@ -1,0 +1,11 @@
+*** Settings ***
+Library           DatabaseLibrary
+Library           String
+
+*** Keywords ***
+app_getprojs_sql查询
+    Connect To Database Using Custom Params    pymssql    database='xmweb',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${A}    query    SELECT top 10 \ proj.OBJ_ID as projid, proj.TENDER_PROJECT_NAME as projname, proj.TENDER_PROJECT_CODE as bidcode, (case proj.TENDER_PROJECT_TYPE when 'A01' then '房建' when 'A02' then '市政' when 'A03' then '公路' when 'A04' then '铁路' when 'A05' then '民航' when 'A06' then '水运' \ \ when 'A07' then '水利水电' when 'A08' then '能源电力' when 'A09' then '广电通信' \ \ else '其他' end) as projtype, isnull(dict.DICTNAME,'') as bidtype FROM T_TENDER_PROJECT proj left join T_BIDDING_NOTICE bidNotice on bidNotice.PCODE_TPROJECT_UNIQUE_ID = proj.PCODE_TPROJECT_UNIQUE_ID left outer join (select * from EOS_DICT_ENTRY where DICTTYPEID = 'TENDER_TYPE')dict on bidNotice.TENDER_TYPE = dict.DICTID where proj.DATA_APPROVE_STATUS = 1 and proj.DATA_PUB_STATUS = 1 and bidNotice.DOC_TYPE = 1 and bidNotice.DATA_APPROVE_STATUS = 1 order by proj.DATA_CREATE_TIME desc;    #查询语句
+    Comment    log    ${A[6][4]}
+    set suite variable    ${A}
+    disconnect from database

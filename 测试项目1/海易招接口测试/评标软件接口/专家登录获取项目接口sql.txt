@@ -1,0 +1,18 @@
+*** Settings ***
+Library           DatabaseLibrary
+
+*** Keywords ***
+入参sql查询
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${login}    query    select b.idcard ,a.pwd from t_proj_experts a, \ \ \ t_experts b where a.expertid = b.expertid and a.pwd is not null and b.idcard is not NULL;
+    ${count_2}    row count    select b.idcard ,a.pwd from t_proj_experts a, \ \ \ t_experts b where a.expertid = b.expertid and a.pwd is not null and b.idcard is not NULL;
+    disconnect from database
+    [Return]    ${count_2}    ${login}    # 入参Sql查询
+
+成功获取项目sql
+    [Arguments]    ${idCard}    ${pwd}
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${logout}    query    select \ a.projid, a.ename,c.projname,reviewtime from t_proj_experts a \ left join t_experts b on a.expertid = b.expertid \ INNER JOIN t_projects c on c.projid=a.projid and c.status <> 3 and c.isfiled = 0 and c.deltag=0 where \ \ b.idcard = '${idCard}' and a.pwd='${pwd}' and a.astate=1;
+    ${paramvalue }    query    select paramvalue from t_params where paramcode='expertLoginSecode';
+    disconnect from database
+    [Return]    ${logout}    ${paramvalue }

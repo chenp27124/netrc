@@ -1,0 +1,27 @@
+*** Settings ***
+Resource          ../public.txt
+Resource          企业注册.txt
+
+*** Keywords ***
+企业正常注册接口模板
+    [Arguments]    ${SessionAlias}    ${URI}    ${account}    ${pwd}    ${email}    ${entcode}
+    ...    ${entName}    ${mobile}    ${role_1}    ${role_2}    ${url}    ${result}
+    ...    ${status}
+    创建session以及入参数据    ${SessionAlias}    ${URI}    ${account}    ${pwd}    ${email}    ${entcode}
+    ...    ${entName}    ${mobile}    ${role_1}    ${role_2}
+    post请求    ${SessionAlias}    ${url}    ${data}
+    断言    ${result}    ${status}    ${content}
+    断开SESSION（公共）
+    正常注册sql查询    ${entcode}    ${role_1}    ${role_2}    ${account}
+    sql数据比对    ${entName}    ${t_depts}    ${entcode}    ${account}    ${t_manager}    ${pwd}
+    ...    ${entName}    ${email}    ${mobile}    ${count}    ${count_1}
+
+企业异常注册接口模板
+    [Arguments]    ${SessionAlias}    ${URI}    ${account}    ${pwd}    ${email}    ${entcode}
+    ...    ${entName}    ${mobile}    ${role_1}    ${role_2}    ${url}    ${result}
+    ...    ${status}
+    创建session以及入参数据    ${SessionAlias}    ${URI}    ${account}    ${pwd}    ${email}    ${entcode}
+    ...    ${entName}    ${mobile}    ${role_1}    ${role_2}
+    post请求    ${SessionAlias}    ${url}    ${data}
+    断言    ${result}    ${status}    ${content}
+    断开SESSION（公共）

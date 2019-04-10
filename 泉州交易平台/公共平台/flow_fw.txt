@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          page_fw.txt
+Resource          element_fw.txt
+
+*** Keywords ***
+业务办理流程
+    点击业务办理
+    项目查询
+    初审
+    再审
+
+场地预约审核流程
+    点击“场地管理"
+    点击"场地预约"
+    场地预约查询
+    预约审核

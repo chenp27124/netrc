@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          public.txt
+Resource          public_flow.txt
+
+*** Test Cases ***
+登录
+    登录流程_代理端
+    Comment    登录流程_管理端
+
+退出页面
+    退出

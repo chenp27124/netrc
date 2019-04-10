@@ -1,0 +1,12 @@
+*** Settings ***
+Resource          评标软件接口模板.txt
+
+*** Test Cases ***
+获取相关文件接口（proid有值）
+    [Documentation]    招标公告和招标文件(主文件和附件）,补充通知（主文件和附件）
+    [Template]    获取相关文件接口模板
+    314    成功    0
+
+获取相关文件接口（proid为空）
+    [Template]    获取相关文件异常模板
+    \    False    2001    系统错误:Index: 0, Size: 0

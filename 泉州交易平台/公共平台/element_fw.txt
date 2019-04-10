@@ -1,0 +1,105 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           RequestsLibrary
+Library           Collections
+Library           String
+Library           OperatingSystem
+Library           ExcelLibrary
+
+*** Keywords ***
+登录流程1
+    open browser    http://59.57.251.156:9100/qztender//abframe/auth/login.jsp?platform=0    ie
+    Maximize Browser Window
+    Input Text    id=userid    cszxtest
+    Input Password    id=password    Hymake000000
+    Comment    ${value}    get element attribute    xpath=//*[@id="verifyCode_container"]/input@value
+    Comment    input text    xpath=//*[@id="verifyCode_container"]/input    ${value}    #验证码
+    Click element    xpath=//*[@id="loginbox"]/div/div[2]/div/div[4]/table/tbody/tr[6]/td[2]/input    #登录按钮
+    sleep    5
+
+点击业务办理
+    Comment    wait until page contains element    xpath=/html/frameset/frame[1]
+    select frame    xpath=/html/frameset/frame[1]
+    click element    xpath=//*[@id="header"]/ul/li[3]/a    #点击“建设工程"按钮
+    unselect frame    #退出topframe
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[1]
+    select frame    xpath=//*[@id="oa_frame"]/frame[1]    #进入leftFrame
+    click element    xpath=//*[@id="3067"]
+
+输入项目名称
+    unselect frame    #退出bodyframe_all
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #进入bodyframe
+    wait until page contains element    xpath=//*[@id="doneFile_container"]/iframe
+    select frame    xpath=//*[@id="doneFile_container"]/iframe    #进入officialManeger
+    input text    xpath=//*[@name="query/projname"]    ${projname}    #输入项目名称
+
+点击查询按钮
+    click element    //*[@value="查询"]
+
+点击初审按钮
+    click element    xpath=//*[@name="listForm"]/table/tbody/tr[3]/td[8]/a[1]
+
+初审确定按钮
+    unselect frame    #退出bodyframe_all
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #进入bodyframe
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]    #进入eos-popwin-body-iframe
+    click element    xpath=//*[@name="data_form"]/table/tbody/tr[13]/td/input[1]
+    sleep    6
+
+点击再审按钮
+    unselect frame    #退出bodyframe_all
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #进入bodyframe
+    wait until page contains element    xpath=//*[@id="doneFile_container"]/iframe
+    select frame    xpath=//*[@id="doneFile_container"]/iframe    #进入officialManeger
+    click element    xpath=//*[@name="listForm"]/table/tbody/tr[3]/td[8]/a[1]
+
+再审确定按钮
+    unselect frame    #退出bodyframe_all
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #进入bodyframe
+    wait until page contains element    xpath=//*[@class="eos-popwin-body-iframe"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]    #进入eos-popwin-body-iframe
+    focus    xpath=//*[@name="data_form"]/table[3]/tbody/tr[6]/td/input[1]
+    click element    xpath=//*[@name="data_form"]/table[3]/tbody/tr[6]/td/input[1]
+
+点击“场地管理"
+    select frame    xpath=/html/frameset/frame[1]
+    click element    xpath=//*[@id="header"]/ul/li[8]/a
+
+点击"场地预约"
+    unselect frame    #退出topframe
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[1]
+    select frame    xpath=//*[@id="oa_frame"]/frame[1]    #进入leftFrame
+    click element    id=menu_4
+
+场地预约查询
+    unselect frame    #退出bodyframe_all
+    wait until page contains element    xpath=/html/frameset/frame[2]
+    select frame    xpath=/html/frameset/frame[2]    #进入bodyframe_all
+    wait until page contains element    xpath=//*[@id="oa_frame"]/frame[3]
+    select frame    xpath=//*[@id="oa_frame"]/frame[3]    #进入bodyframe
+    input text    id=note    ${projname}
+    click element    xpath=//*[@value="查询"]
+
+预约审核
+    click element    xpath=//*[@value="审核"]
+    select frame    xpath=//*[@class="eos-popwin-body-iframe"]
+    click element    xpath=//*[@name="bookdatil/status" and @value="2"]
+    click element    xpath=//*[@id="objTable"]/tbody/tr[15]/td/input[1]

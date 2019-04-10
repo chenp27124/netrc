@@ -1,0 +1,56 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           Collections
+Library           string
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+Library           json
+
+*** Keywords ***
+创建params
+    [Arguments]    ${proid}
+    ${param}    create dictionary    projid=${proid}
+    [Return]    ${param}
+
+成功获取CA类型sql
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_cattype}    query    select * from t_catype where deltag=0;
+    ${count}    row count    select * from t_catype where deltag=0;
+    disconnect from database
+    [Return]    ${t_cattype}    ${count}
+
+断言以及CA类型数据sql比对
+    [Arguments]    ${content}    ${status}    ${count}    ${t_cattype}
+    ${code}    get from dictionary    ${content}    code
+    should be equal as strings    ${code}    ${status}
+    ${resp_2}    get from dictionary    ${content}    data
+    : FOR    ${i}    IN RANGE    ${count}
+    \    should be equal    ${resp_2['catype'][${i}]['certname']}    ${t_cattype[${i}][2]}
+    \    should be equal    ${resp_2['catype'][${i}]['certorg']}    ${t_cattype[${i}][3]}
+    \    should be equal    int(${resp_2['catype'][${i}]['certtype']})    int(${t_cattype[${i}][1]})
+
+成功获取ＣＡ类型sql(proid值存在）
+    [Arguments]    ${proid}
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_proj_cattype}    query    select * from t_proj_catype where projid=${proid};
+    ${count1}    row count    select * from t_proj_catype where projid=${proid};
+    disconnect from database
+    [Return]    ${t_proj_cattype}    ${count1}
+
+断言以及sql(proid存在）对比
+    [Arguments]    ${content}    ${status}    ${count1}    ${t_proj_cattype}
+    ${code}    get from dictionary    ${content}    code
+    should be equal as strings    ${code}    ${status}
+    ${resp_2}    get from dictionary    ${content}    data
+    : FOR    ${i}    IN RANGE    ${count1}
+    \    should be equal    ${resp_2['catype'][${i}]['certname']}    ${t_proj_cattype[${i}][3]}
+    \    should be equal    ${resp_2['catype'][${i}]['certorg']}    ${t_proj_cattype[${i}][4]}
+    \    should be equal    int(${resp_2['catype'][${i}]['certtype']})    int(${t_proj_cattype[${i}][2]})
+
+断言
+    [Arguments]    ${content}    ${errorno}    ${errormsg}
+    ${code}    get from dictionary    ${content}    errorno
+    should be equal as strings    ${code}    ${errorno}
+    ${msg}    get from dictionary    ${content}    errormsg
+    should be equal as strings    ${msg}    ${errormsg}

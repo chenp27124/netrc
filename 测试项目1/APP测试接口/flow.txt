@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          mykeyword.txt
+
+*** Keywords ***
+查询项目模板
+    [Arguments]    ${alis}    ${URL}    ${projname}    ${bidcode}    ${projtype}    ${bidtype}
+    ...    ${URI}
+    创建session    ${alis}    ${URL}
+    创建入参数据    ${projname}    ${bidcode}    ${projtype}    ${bidtype}
+    创建数据头
+    使用post请求    ${alis}    ${URI}
+    请求状态断言
+    结果转为json格式
+    结果断言
+    删除session

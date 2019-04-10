@@ -1,0 +1,3 @@
+*** Test Cases ***
+CA类型接口（proid为0）
+    [Template]    CA类型接口模板

@@ -1,0 +1,17 @@
+*** Settings ***
+Resource          public.txt
+
+*** Keywords ***
+登录流程_代理端
+    打开浏览器    http://59.57.251.152:8180/Index/index
+    输入用户名和密码    daili    123
+    点击登录按钮
+
+登录流程_管理端
+    Comment    打开浏览器    http://59.57.251.152:8180/Index/index
+    输入用户名和密码    jiaoyi1    aa000000
+    点击登录按钮
+
+登录流程_代理端1
+    输入用户名和密码    daili    123
+    点击登录按钮

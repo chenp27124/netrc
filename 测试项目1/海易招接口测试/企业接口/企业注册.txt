@@ -1,0 +1,41 @@
+*** Settings ***
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           AutoItLibrary
+Library           Collections
+Library           String
+Library           ExcelLibrary
+Library           requests
+Library           json
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+Resource          ../public.txt
+Resource          企业注册sql.txt
+
+*** Keywords ***
+创建session以及入参数据
+    [Arguments]    ${SessionAlias}    ${URI}    ${account}    ${pwd}    ${email}    ${entcode}
+    ...    ${entName}    ${mobile}    ${role_1}    ${role_2}
+    create session    ${SessionAlias}    ${URI}    #创建session
+    set suite variable    ${data}    { \ \ \ \ "accountInfo": { \ \ \ \ \ \ \ \ "account": "${account}", \ \ \ \ \ \ \ \ "password": "${pwd}" \ \ \ \ }, \ \ \ \ "entInfo": { \ \ \ \ \ \ \ \ "email": "${email}", "entCode":"${entcode}", \ \ \ \ \ \ \ \ "entName": "${entName}", \ \ \ \ \ \ \ \ "mobileNo": "${mobile}" \ \ \ \ }, \ \ \ \ "roleType": [ \ \ \ \ \ \ \ \ { \ \ \ \ \ \ \ \ \ \ \ \ "roleType": "${role_1}" \ } ,{ \ \ \ \ \ \ \ \ \ \ \ \ "roleType": "${role_2}" \ }] }    #设置参数值
+    [Return]    ${data}    # 入参数据
+
+断言
+    [Arguments]    ${result}    ${status}    ${content}
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    message
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+
+sql数据比对
+    [Arguments]    ${entName}    ${t_depts}    ${entcode}    ${account}    ${t_manager}    ${pwd}
+    ...    ${entName}    ${email}    ${mobile}    ${count}    ${count_1}
+    should be equal as strings    ${entName}    ${t_depts[0][0]}
+    should be equal as strings    ${entcode}    ${t_depts[0][1]}
+    should be equal as strings    ${account}    ${t_manager[0][0]}
+    should be equal as strings    ${pwd}    ${t_manager[0][1]}
+    should be equal as strings    ${entName}    ${t_manager[0][2]}
+    should be equal as strings    ${email}    ${t_manager[0][3]}
+    should be equal as strings    ${mobile}    ${t_manager[0][4]}
+    should be true    ${count}==2
+    should be true    ${count_1}==1

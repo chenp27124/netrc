@@ -1,0 +1,56 @@
+*** Settings ***
+Resource          企业注册.txt
+Resource          ../public.txt
+Resource          企业注册sql.txt
+Resource          企业接口模板.txt
+
+*** Test Cases ***
+正常注册（hyzEntprises/corporate_post)
+    [Template]    企业正常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest039    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test039    20190120039
+    ...    18650179700    02    05    /hyzEntprises/corporate    成功!    0
+
+entCode重复_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest027    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test026    20190120027
+    ...    18650179700    02    05    /hyzEntprises/corporate    投标人已存在!    1
+
+account重复_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest026    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test027    20190120027
+    ...    18650179700    02    05    /hyzEntprises/corporate    用户名已存在!    2
+
+account为空_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    \    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test027    20190120027
+    ...    18650179700    02    05    /hyzEntprises/corporate    参数错误!    9
+
+entcode为空_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest024    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    \    20190120024
+    ...    18650179700    02    05    /hyzEntprises/corporate    参数错误!    9
+
+pwd为空_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest027    \    55555555555@qq.com    test027    20190120027
+    ...    18650179700    02    05    /hyzEntprises/corporate    参数错误!    9
+
+email为空注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest040    hb9YMeWTQx6IKIfgd0ALfw==    \    test040    20190120037
+    ...    18650179700    02    05    /hyzEntprises/corporate    参数错误!    9
+
+entname为空_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest029    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test029    ${EMPTY}
+    ...    18650179700    02    05    /hyzEntprises/corporate    参数错误!    9
+
+mobile为空_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest030    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test030    20190120030
+    ...    \    02    05    /hyzEntprises/corporate    参数错误!    9
+
+roletype为空_注册
+    [Template]    企业异常注册接口模板    # session名称 | uri地址 | account | pwd|email|entcode | entname | mobile|role_1|role_2|注册接口url | message | #code
+    Entprises    http://192.168.102.151:82/hyebid4mongo/webservice/    hyztest031    hb9YMeWTQx6IKIfgd0ALfw==    55555555555@qq.com    test031    20190120031
+    ...    18650179700    \    \    /hyzEntprises/corporate    参数错误!    9

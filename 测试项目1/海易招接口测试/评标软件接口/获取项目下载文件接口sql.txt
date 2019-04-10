@@ -1,0 +1,16 @@
+*** Settings ***
+Library           DatabaseLibrary
+
+*** Keywords ***
+获取下载文件出参sql
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_projs}    query    select projid,projname,openaddr ,opentime,decrypttime,pstage,evaaddrcode from t_projects a \ where status <> 3 and deltag=0 and isfiled = 0 \ and datediff(day,opentime,getdate())=0 \ and (decrypttime <= getdate() or openspage=9) \ and isebid=1 and pstage < '006' \ and exists (select 1 from t_zbfiles where filecls = 0 and filescls=0 and pubstatus=2 and projid=a.projid);
+    ${t_projs_count}    row count    select projid,projname,openaddr ,opentime,decrypttime,pstage,evaaddrcode from t_projects a \ where status <> 3 and deltag=0 and isfiled = 0 \ and datediff(day,opentime,getdate())=0 \ and (decrypttime <= getdate() or openspage=9) \ and isebid=1 and pstage < '006' \ and exists (select 1 from t_zbfiles where filecls = 0 and filescls=0 and pubstatus=2 and projid=a.projid);
+    Comment    disconnect from database
+    [Return]    ${t_projs}    ${t_projs_count}
+
+获取下载文件出参sql2
+    [Arguments]    ${room_id1}    ${room_id2}
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_projs}    query    select projid,projname,openaddr ,opentime,decrypttime,pstage,evaaddrcode from t_projects a \ where status <> 3 and deltag=0 and isfiled = 0 \ and datediff(day,opentime,getdate())=0 \ and (decrypttime <= getdate() or openspage=9) \ and isebid=1 and pstage < '006' \ and exists (select 1 from t_zbfiles where filecls = 0 and filescls=0 and pubstatus=2 and projid=a.projid) and evaaddrcode in ('${room_id1} ','${room_id2} ');
+    [Return]    ${t_projs}

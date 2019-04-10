@@ -1,0 +1,94 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           Collections
+Library           String
+Library           OperatingSystem
+Library           ExcelLibrary
+
+*** Keywords ***
+点击“招标登记”
+    click element    xpath=//*[@id="jsgc"]/li[2]/a/span[2]
+
+点击“新增”按钮
+    click element    xpath=/html/body/div[2]/div[4]/div/div/div[2]/div/button[1]
+
+选择交易中心
+    select radio button    centers    14
+
+选择所属类型
+    [Arguments]    ${trade_type}
+    select radio button    projtradetype    ${trade_type}
+
+点击下一步
+    click element    id=next_zbdj
+
+招标项目编号（红色）
+    [Arguments]    ${projcode}
+    sleep    2
+    input text    id=projcode    ${projcode}
+
+招标项目名称（红色）
+    [Arguments]    ${projName}
+    input text    id=projname    ${projName}
+
+招标人名称（红色）
+    input text    xpath=//*[@id="bidreg"]/div/table[1]/tbody/tr[7]/td/input    张三
+
+代理联系手机
+    input text    id=linktel    13456789012
+
+招标方式（红色）
+    select from list    xpath=//*[@id="bidreg"]/div/table[1]/tbody/tr[10]/td/select    1
+
+项目组成员（红色）
+    select from list    id=projManage1    193788
+
+交易分类
+    [Arguments]    ${type}
+    select from list by value    xpath=//*[@name="Dict_projectType"]    ${type}
+
+项目名称（红色）
+    input text    id=projectname    ${projName}
+
+区域代码
+    click element    id=provinceid
+    click element    xpath=//*[@value="350000"]
+    Comment    select from list by value    id=provinceid    350000
+    Comment    sleep    1
+    Comment    select from list by value    id=cityid    350500
+    Comment    sleep    1
+    click element    id=countyid
+    click element    xpath=//*[@value="350190"]
+    Comment    select from list by value    id=countyid    350501
+
+行业分类
+    click element    xpath=//*[@id="bidreg"]/div/table[2]/tbody/tr[5]/td/input[2]
+    Comment    Assign Id To Element    id=chooseVal    new_id
+    Comment    execute javascript    window.document.getElementById('new_id')='E47'
+    Comment    execute javascript    window.document.getElementById('new_id').removeAttribute("readonly")
+    click element    xpath=//*[@id="hangyeBig"]/ul/li[5]
+    click element    xpath=//*[@id="hangyeSmall"]/ul/li[3]
+    click element    xpath=//*[@id="confirmChoose"]
+
+地址
+    input text    id=projaddr    观日路
+
+来源
+    input text    id=fundsource    自筹
+
+选择文件
+    click element    xpath=//*[@id="uploader11"]/div/div[2]/div/div[2]/object
+    Comment    AutoItLibrary.Run    招标登记文件(红色).exe
+    win wait    选择要上载的文件，通过: 59.57.251.156
+    win active    选择要上载的文件，通过: 59.57.251.156
+    Control Set Text    \    \    Edit1    E:\\RF\\bidfile\\招标公告.doc
+    Control Click    \    \    Button2
+
+选择文件上传
+
+保存并提交
+    sleep    2
+    click element    xpath=/html/body/div[7]/div[3]/div/button[2]/span
+    sleep    10
+    send    {ENTER}

@@ -1,0 +1,24 @@
+*** Settings ***
+Resource          政府采购_page.txt
+Resource          政府采购（代理）_element.txt
+Resource          政府采购（管理）_element.txt
+
+*** Keywords ***
+新增采购项目流程
+    [Arguments]    ${proj_no}    ${proj_name}    ${proj_type}    ${org_form}    ${buy_mode}
+    点击采购项目菜单
+    点击新增采购项目按钮
+    新增采购项目    ${proj_no}    ${proj_name}    ${proj_type}    ${org_form}    ${buy_mode}
+
+审核采购项目流程
+    [Arguments]    ${proj_name}
+    点击业务办理--代办事项
+    查询新增项目    ${proj_name}
+    审核项目
+
+政府采购-场地预约流程
+    [Arguments]    ${proj_name}
+    点击场地预约管理菜单
+    Comment    点击新增预约按钮
+    Comment    新增政府采购预约    ${proj_name}
+    新增预约成功校验    ${proj_name}

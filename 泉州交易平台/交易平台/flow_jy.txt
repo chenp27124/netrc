@@ -1,0 +1,61 @@
+*** Settings ***
+Resource          element_jy.txt
+Resource          page_jy.txt
+Resource          element_hs.txt
+
+*** Keywords ***
+交易平台登录流程
+    打开浏览器
+    窗口最大化
+    登录页面
+
+招标登记流程-建设工程
+    [Arguments]    ${projCode}
+    点击“建设工程"菜单
+    点击"招标登记"菜单
+    点击”新增“按钮
+    招标项目信息    ${projCode}
+    项目信息
+    上传文件
+    点击”提交“按钮
+
+场地预约流程-建设工程
+    [Arguments]    ${start_time}    ${end_time}
+    点击“建设工程"菜单
+    点击"场地预约"菜单
+    场地预约-新增按钮
+    场地预约页面    ${start_time}    ${end_time}
+
+登记流程（红色）
+    [Arguments]    ${trade_type}    ${type}
+    点击“招标登记”
+    open excel    E:\\RF\\bidfile\\红色网站招标登记_2.xls
+    ${row_count}    get row count    Sheet1    #${row_count}为行数
+    @{read_columna}    get column values    Sheet1    0    #第一列的所有值
+    @{read_columnb}    get column values    Sheet1    1    #第二列的所有值
+    : FOR    ${X}    IN RANGE    2    ${row_count}
+    \    ${projcode}    set variable    ${read_columna[${X}][1]}
+    \    ${projName}    set variable    ${read_columnb[${X}][1]}
+    \    点击“新增”按钮
+    \    选择交易中心
+    \    选择所属类型    ${trade_type}
+    \    点击下一步
+    \    招标项目信息（红色）    ${projcode}    ${projName}
+    \    项目信息（红色）    ${type}
+    \    上传文件（红色）
+
+建档流程
+    [Arguments]    ${class}    ${bidmind}
+    点击“建设工程"菜单
+    点击"招标登记"菜单
+    招标登记查询
+    招标建档    ${class}    ${bidmind}
+
+具体信息（建设工程）流程
+    招标具体信息
+    招标人
+    标段包
+    保证金
+    Comment    标书销售
+    招标时间和场所
+    点击保存

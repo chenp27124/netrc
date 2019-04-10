@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+Library           OperatingSystem
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${URL_XM}
+    open browser    ${URL_XM}    chrome
+    Maximize Browser Window
+
+输入用户名和密码
+    [Arguments]    ${userName}    ${pwd}
+    sleep    2
+    input text    id=username    ${userName}
+    input password    id=pwd    ${pwd}
+
+点击登录按钮
+    click element    id=lgcm
+    sleep    5
+    wait until page contains    场地管理与控制系统
+
+退出
+    sleep    3
+    click element    xpath=/html/body/nav[1]/div[2]/ul[2]/li[3]/a
+    click element    xpath=/html/body/nav[1]/div[2]/ul[2]/li[3]/ul/li[3]/a
+    send    {ENTER}

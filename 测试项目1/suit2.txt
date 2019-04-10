@@ -1,0 +1,46 @@
+*** Settings ***
+Resource          flow1.txt
+Resource          element1.txt
+
+*** Test Cases ***
+报建信息接口
+    报建信息查询接口脚本
+    [Teardown]
+
+test1
+    if语句
+
+test2
+    FOR循环
+
+泉州公共服务平台-登录
+    公共平台登陆
+
+读取excel
+    读取excel数据
+
+数据库连接
+    Comment    sql server 数据库连接
+    芒果库数据库连接
+
+中文乱码
+    list乱码验证
+
+E鹭交易APP测试
+    页面登录
+
+get length测试
+    字典长度测试
+
+fetch from left/right函数测试
+    fetch from left/right 函数
+
+Generate Random String测试
+    Generate Random String函数测试
+
+sql调试
+    Comment    注册接口调试
+    专家获取项目接口调试
+
+dictionary 函数
+    dictionary函数调试

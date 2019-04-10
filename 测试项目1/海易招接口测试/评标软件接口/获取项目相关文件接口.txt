@@ -1,0 +1,119 @@
+*** Settings ***
+Library           RequestsLibrary
+Library           Collections
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+Library           MongoDBLibrary
+Library           string
+Library           Selenium2Library
+
+*** Keywords ***
+创建相关文件session
+    [Arguments]    ${SessionAlias}=BidEvaProjFiles    ${URI}=http://192.168.102.151:82/hyebid4mongo/webservice/
+    create session    ${SessionAlias}    ${URI}
+
+创建相关文件入参数据
+    [Arguments]    ${proj_id}
+    set suite variable    ${data}    { \ \ \ \ "projid": "${proj_id}" }
+    [Return]    ${data}
+
+获取相关文件出参sql（sqlserver)
+    [Arguments]    ${proj_id}
+    Connect To Database Using Custom Params    pymssql    database='ebid',user='sa',password='Hymake@123',host='192.168.102.38',port=1433,charset='cp936'
+    ${t_projs}    query    select projname,projid from t_projects where projid=${proj_id};    #获取项目信息
+    ${t_projfiles}    query    select a.fileids,a.filecls,a.filescls,b.title \ from t_zbfiles a left outer join hy_files b on a.fileids = b.fid where a.filecls = 0 and a.filescls=0 and pubstatus=2 \ and a.projid=${proj_id};    #招标公告主文件
+    ${t_projfiles_1}    query    select a.fileids,a.filecls,a.filescls,b.title \ from t_zbfiles a left outer join hy_files b on a.fileids = b.fid where a.filecls = 1 and a.filescls=0 and pubstatus=2 \ and a.projid=${proj_id};    #招标文件主文件
+    ${t_projfiles_2}    query    select a.fileids,a.filecls,a.filescls,b.title \ from t_zbfiles a left outer join hy_files b on a.fileids = b.fid where a.filecls = 3 \ \ and a.projid=${proj_id};    #招标文件附件
+    ${count}    row count    select a.fileids,a.filecls,a.filescls,b.title \ from t_zbfiles a left outer join hy_files b on a.fileids = b.fid where a.filecls = 3 \ \ and a.projid=${proj_id};
+    ${t_projfiles_3}    query    select a.fileid,a.fileids,a.filecls,a.filescls,b.title \ from t_zbfiles a left outer join hy_files b on a.fileids = b.fid where a.filecls in(2,4,6) and a.filescls=0 and pubstatus=2 and a.projid=${proj_id};
+    ${t_projfiles_4}    query    select a.fileid,a.fileids,a.filecls,a.filescls,b.title,b.nid from t_zbfiles a left outer join t_bidnotices b on a.fileid=b.fileid where a.fileids='${t_projfiles_3[0][1]}';
+    ${t_projfiles_5}    query    select a.fileid,a.fileids,a.filecls,a.filescls,b.title,c.title from t_zbfiles a left outer join t_bidnotices b on a.nid=b.nid \ left outer join hy_files c on a.fileids=c.fid where a.nid=${t_projfiles_4[0][5]};
+    disconnect from database
+    [Return]    ${t_projs}    ${t_projfiles}    ${t_projfiles_1}    ${t_projfiles_2}    ${count}    ${t_projfiles_3}
+    ...    ${t_projfiles_4}    ${t_projfiles_5}
+
+获取相关文件出参sql(mongo)
+    [Arguments]    ${t_projfiles_2}    ${count}
+    Connect To MongoDB    192.168.102.151    27017
+    Comment    ${A}    Retrieve All Mongodb Records    efiles    da_filedescribes
+    ${a_list}    create list
+    : FOR    ${i}    IN RANGE    ${count}
+    \    ${B}    Retrieve some Mongodb Records    efiles    da_filedescribes    {"c_fid":"${t_projfiles_2[${i}][0]}"}    {'c_filename':1}
+    \    ${a}    set variable    ${B[0]['c_filename']}
+    \    append to list    ${a_list}    ${a}
+    log    ${a_list}
+    ${C}    Retrieve some Mongodb Records    efiles    da_filedescribes    {"c_fid":"${t_projfiles_5[0][1]}"}    {'c_filename':1}
+    Disconnect From Mongodb
+    [Return]    ${a_list}    ${C}
+
+相关文件断言比较数据比对
+    [Arguments]    ${content}    ${result}    ${status}    ${t_projs}    ${t_projfiles}    ${t_projfiles_1}
+    ...    ${t_projfiles_2}    ${a_list}    ${count}    ${t_projfiles_3}    ${t_projfiles_4}    ${t_projfiles_5}
+    ...    ${C}
+    [Documentation]    11-21行为招标公告核对
+    ...    22-32行为招标公告主文件核对
+    ...    33-41行为招标公告文件附件核对
+    ...    42-50为补充通知主文件
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    ${resp_1}    get from dictionary    ${content}    data
+    ${keys}    get dictionary keys    ${resp_1}
+    should contain    ${keys}    projid
+    should contain    ${keys}    projname
+    should be equal    ${resp_1['projname']}    ${t_projs[0][0]}
+    should be equal    str(${resp_1['projid']})    str(${t_projs[0][1]})
+    ${profile_keys}    get dictionary keys    ${resp_1['projfiles'][0]}
+    should contain    ${profile_keys}    code
+    should contain    ${profile_keys}    name
+    should contain    ${profile_keys}    pdffilename
+    should contain    ${profile_keys}    pdfurl
+    should be equal    ${resp_1['projfiles'][0]['code']}    1
+    should be equal    ${resp_1['projfiles'][0]['name']}    招标公告
+    ${pdffile_name}    catenate    SEPARATOR=    ${t_projfiles[0][0]}    _1.pdf
+    should be equal    ${resp_1['projfiles'][0]['pdffilename']}    ${pdffile_name}
+    ${pdf_url}    catenate    SEPARATOR=    http://192.168.102.151:80/downtemp/cab100099/    ${pdffile_name}
+    should be equal    ${resp_1['projfiles'][0]['pdfurl']}    ${pdf_url}
+    ${keys_1}    get dictionary keys    ${resp_1['projfiles'][1]}
+    should contain    ${keys_1}    code
+    should contain    ${keys_1}    name
+    should contain    ${keys_1}    pdffilename
+    should contain    ${keys_1}    pdfurl
+    should be equal    ${resp_1['projfiles'][1]['code']}    2
+    should be equal    ${resp_1['projfiles'][1]['name']}    招标文件
+    ${pdffile_name_1}    catenate    SEPARATOR=    ${t_projfiles_1[0][0]}    _1.pdf
+    should be equal    ${resp_1['projfiles'][1]['pdffilename']}    ${pdffile_name_1}
+    ${pdf_url_1}    catenate    SEPARATOR=    http://192.168.102.151:80/downtemp/cab100099/    ${pdffile_name_1}
+    should be equal    ${resp_1['projfiles'][1]['pdfurl']}    ${pdf_url_1}
+    ${keys_2}    get dictionary keys    ${resp_1['projfiles'][1]['datas'][0]}
+    should contain    ${keys_2}    displayname
+    should contain    ${keys_2}    filename
+    should contain    ${keys_2}    fileurl
+    : FOR    ${j}    IN RANGE    ${count}
+    \    should be equal    ${resp_1['projfiles'][1]['datas'][${j}]['displayname']}    ${t_projfiles_2[${j}][3]}
+    \    should be equal    ${resp_1['projfiles'][1]['datas'][${j}]['filename']}    ${a_list[${j}]}
+    \    ${fileurl}    catenate    SEPARATOR=    http://192.168.102.151:80/uptemp/cab100099/    ${a_list[${j}]}
+    \    should be equal    ${resp_1['projfiles'][1]['datas'][${j}]['fileurl']}    ${fileurl}
+    ${keys_3}    get dictionary keys    ${resp_1['projfiles'][2]}
+    should contain    ${keys_3}    code
+    should contain    ${keys_3}    name
+    should contain    ${keys_3}    pdffilename
+    should contain    ${keys_3}    pdfurl
+    should be equal    ${resp_1['projfiles'][2]['code']}    3
+    should be equal    ${resp_1['projfiles'][2]['name']}    补充通知
+    ${pdffile_name_2}    catenate    SEPARATOR=    ${t_projfiles_3[0][1]}    _1.pdf
+    should be equal    ${resp_1['projfiles'][2]['pdffilename']}    ${pdffile_name_2}
+    should be equal    ${resp_1['projfiles'][2]['datas'][0]['displayname']}    ${t_projfiles_5[0][5]}
+    should be equal    ${resp_1['projfiles'][2]['datas'][0]['filename']}    ${C[0]['c_filename']}
+    ${pdf_url_3}    catenate    SEPARATOR=    http://192.168.102.151:80/uptemp/cab100099/    ${resp_1['projfiles'][2]['datas'][0]['filename']}
+    should be equal    ${resp_1['projfiles'][2]['datas'][0]['fileurl']}    ${pdf_url_3}
+
+获取相关文件-异常断言
+    [Arguments]    ${content}    ${result}    ${status}    ${error_1}
+    ${code}    get from dictionary    ${content}    error_code
+    ${message}    get from dictionary    ${content}    result
+    ${error}    get from dictionary    ${content}    error
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    should be equal as strings    ${error}    ${error_1}

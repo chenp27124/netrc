@@ -1,0 +1,10 @@
+*** Settings ***
+Resource          操作日志接口模板.txt
+
+*** Test Cases ***
+软件操作日志接口（投标文件）
+    [Documentation]    ${code} | ${comid} | ${displayname} | ${errcode} | ${errmsg} | ${filetype} | ${fileurl} | ${machineid} | ${name} | ${partid} | ${pdffilename} | ${projid} | ${projname}
+    [Template]    软件操作日志接口模板
+    成功    0    1    662    投资文件    0    20190327测试信息
+    ...    0    http://192.168.102.151/downtemp/cab100099/Decryptfile//532/100099528629/C6FD202F4C3E49AEB082EE7C7B893CC1.pdf    0    资格文件    11    C6FD202F4C3E49AEB082EE7C7B893CC1.pdf
+    ...    314    20181102测试项目线下信息发布-lhz

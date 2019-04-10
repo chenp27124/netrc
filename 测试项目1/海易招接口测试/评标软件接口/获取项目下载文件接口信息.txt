@@ -1,0 +1,86 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           String
+Library           json
+Library           RequestsLibrary
+Library           Collections
+Library           MongoDBLibrary
+Library           DatabaseLibrary
+
+*** Keywords ***
+创建下载文件入参数据
+    [Arguments]    ${room_id1}    ${room_id2}
+    set suite variable    ${data}    { \ \ \ \ "roomid": [ \ \ \ \ \ \ \ \ "${room_id1}", \ \ \ \ \ \ \ \ "${room_id2}" \ \ \ \ ] }
+    [Return]    ${data}
+
+下载文件断言以及sql对比
+    [Arguments]    ${content}    ${result}    ${status}    ${t_projs}    ${t_projs_count}    ${room_id1}
+    ...    ${room_id2}
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    ${resp_2}    get from dictionary    ${content}    data    #5-10行为出参字段比对
+    ${keys}    get dictionary keys    ${resp_2[0]}
+    should contain    ${keys}    projid
+    should contain    ${keys}    projname
+    should contain    ${keys}    roomname
+    should contain    ${keys}    roomid
+    ${a_list}    create list
+    log    ${a_list}
+    : FOR    ${j}    IN RANGE    ${t_projs_count}
+    \    ${a}    set variable    ${t_projs[${j}][6]}
+    \    append to list    ${a_list}    ${a}
+    log    ${a_list}
+    Should Not Contain    ${a_list}    ${room_id1}
+    Should Not Contain    ${a_list}    ${room_id2}
+    : FOR    ${i}    IN RANGE    ${t_projs_count}    #19-31行为出参数据比对
+    \    should be equal    str(${resp_2[${i}]['projid']})    str(${t_projs[${i}][0]})
+    \    should be equal    ${resp_2[${i}]['projname']}    ${t_projs[${i}][1]}
+    \    should be equal    ${resp_2[${i}]['roomname']}    ${t_projs[${i}][2]}
+    \    should be equal    ${resp_2[${i}]['roomid']}    ${t_projs[${i}][6]}
+    \    ${count_tid}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (1,2,3);    #查询解密总数allcount
+    \    should be equal    ${resp_2[${i}]['allcount']}    ${count_tid[0][0]}
+    \    ${count_tid_ok}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (2);    #查询解密成功okcount数
+    \    should be equal    ${resp_2[${i}]['okcount']}    ${count_tid_ok[0][0]}
+    \    ${count_tid_error}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (3);    #查询解密成功errorcount数
+    \    should be equal    ${resp_2[${i}]['errcount']}    ${count_tid_error[0][0]}
+    \    ${count_tid_do}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (1);    #查询解密成功docount数
+    \    should be equal    ${resp_2[${i}]['docount']}    ${count_tid_do[0][0]}
+    disconnect from database
+
+获取下载文件断言以及sql对比2
+    [Arguments]    ${content}    ${result}    ${status}    ${t_projs}    ${room_id1}    ${room_id2}
+    ${code}    get from dictionary    ${content}    code
+    ${message}    get from dictionary    ${content}    msg
+    should be equal as strings    ${message}    ${result}
+    should be equal as strings    ${code}    ${status}
+    ${resp_2}    get from dictionary    ${content}    data    #5-10行为出参字段比对
+    ${keys}    get dictionary keys    ${resp_2[0]}
+    should contain    ${keys}    projid
+    should contain    ${keys}    projname
+    should contain    ${keys}    roomname
+    should contain    ${keys}    roomid
+    ${a_list}    create list
+    log    ${a_list}
+    : FOR    ${j}    IN RANGE    2
+    \    ${a}    set variable    ${t_projs[${j}][6]}
+    \    append to list    ${a_list}    ${a}
+    log    ${a_list}
+    Should Contain    ${a_list}    ${room_id1}
+    Should Contain    ${a_list}    ${room_id2}
+    : FOR    ${i}    IN RANGE    2    #19-31行为出参数据比对
+    \    should be equal    str(${resp_2[${i}]['projid']})    str(${t_projs[${i}][0]})
+    \    should be equal    ${resp_2[${i}]['projname']}    ${t_projs[${i}][1]}
+    \    should be equal    ${resp_2[${i}]['roomname']}    ${t_projs[${i}][2]}
+    \    should be equal    ${resp_2[${i}]['roomid']}    ${t_projs[${i}][6]}
+    \    ${count_tid}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (1,2,3);    #查询解密总数allcount
+    \    should be equal    ${resp_2[${i}]['allcount']}    ${count_tid[0][0]}
+    \    ${count_tid_ok}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (2);    #查询解密成功okcount数
+    \    should be equal    ${resp_2[${i}]['okcount']}    ${count_tid_ok[0][0]}
+    \    ${count_tid_error}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (3);    #查询解密成功errorcount数
+    \    should be equal    ${resp_2[${i}]['errcount']}    ${count_tid_error[0][0]}
+    \    ${count_tid_do}    query    select count(tid) as bealcount from t_proj_deal where projid=${t_projs[${i}][0]} and bidstate=1 and decryptstate in (1);    #查询解密成功docount数
+    \    should be equal    ${resp_2[${i}]['docount']}    ${count_tid_do[0][0]}
+    disconnect from database
