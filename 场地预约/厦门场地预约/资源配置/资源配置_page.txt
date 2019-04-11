@@ -1,0 +1,17 @@
+*** Settings ***
+Resource          ../管理端（业务办理)_element.txt
+Resource          资源配置(代理)_element.txt
+
+*** Keywords ***
+新增资源配置
+    [Arguments]    ${proj_code}    ${proj_name}    ${re_code}
+    项目编号    ${proj_code}
+    项目名称    ${proj_name}
+    备案编号    ${re_code}
+    公共资源管理部门
+    Comment    转让标的所在地区
+    交易方式
+    代理机构联系人
+    代理机构联系方式
+    点击“提交”按钮
+    项目新增成功校验    ${proj_name}

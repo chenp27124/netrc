@@ -60,5 +60,5 @@ Library           AutoItLibrary
     Control Click    \    \    Button1
     sleep    2
     unselect frame
-    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击保存按钮
-    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击提交按钮
+    click element    xpath=/html/body/div[2]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击保存按钮
+    click element    xpath=/html/body/div[3]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击提交按钮

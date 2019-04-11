@@ -1,0 +1,17 @@
+*** Settings ***
+Resource          资源配置_page.txt
+Resource          资源配置(代理)_element.txt
+Resource          ../管理端（业务办理)_element.txt
+
+*** Keywords ***
+新增资源配置项目流程
+    [Arguments]    ${proj_code}    ${proj_name}    ${re_code}
+    点击资源配置项目菜单
+    点击新增资源配置
+    新增资源配置    ${proj_code}    ${proj_name}    ${re_code}
+
+审核资源配置流程
+    [Arguments]    ${proj_name}
+    点击业务办理--代办事项
+    查询新增项目    ${proj_name}
+    审核项目

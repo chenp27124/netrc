@@ -16,8 +16,8 @@ Library           AutoItLibrary
 审核项目
     click element    xpath=//*[@id="1"]/td[2]/a[1]
     unselect frame
-    select frame    xpath=//*[@name="govChkDo"]
+    select frame    xpath=//*[@name="cqChkDo"]
     input text    xpath=//*[@id="CHKNOTES"]    审核通过    #输入审核意见
     unselect frame
     click element    xpath=//*[@value="确认"]
-    send     {ENTER}
+    send    {ENTER}

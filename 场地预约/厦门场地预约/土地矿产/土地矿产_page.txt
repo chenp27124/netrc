@@ -1,5 +1,4 @@
 *** Settings ***
-Resource          土地矿产（管理)_element.txt
 Resource          土地矿产(代理)_element.txt
 
 *** Keywords ***

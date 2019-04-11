@@ -6,6 +6,7 @@ Library           AutoItLibrary
 点击采购项目菜单
     focus    xpath=//*[@id="menu_"]/li[4]/a
     click element    xpath=//*[@id="menu_"]/li[4]/a    #点击政府采购菜单
+    sleep    1
     click element    xpath=//*[@id="menu_"]/li[4]/ul/li[1]/a    #点击采购项目管理菜单
 
 点击新增采购项目按钮
@@ -59,10 +60,10 @@ Library           AutoItLibrary
     win active    打开
     Control Set Text    \    \    Edit1    E:\\RF\\bidfile\\招标公告.doc
     Control Click    \    \    Button1
-    sleep    2
     unselect frame
-    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击保存按钮
-    click element    xpath=/html/body/div[2]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击提交按钮
+    sleep    3
+    click element    xpath=/html/body/div[2]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击保存按钮
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击提交按钮
 
 新增项目成功校验
     [Arguments]    ${proj_name}
@@ -103,7 +104,7 @@ Library           AutoItLibrary
     click element    id=searchBtn1    #点击查询按钮
     click element    id=1    #选择查询列表的记录
     unselect frame
-    send    ^{NUMPADSUB} \ \
+    send    ^{NUMPADSUB}
     click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]    #点击确定按钮
 
 输入联系人和联系电话

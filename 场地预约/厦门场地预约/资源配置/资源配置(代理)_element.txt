@@ -1,0 +1,57 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+点击资源配置项目菜单
+    click element    xpath=//*[@id="menu_"]/li[6]/a
+    click element    xpath=//*[@id="menu_"]/li[6]/ul/li[1]/a
+
+点击新增资源配置
+    select frame    id=MainFrame
+    click element    xpath=//*[@id="add"]
+    unselect frame
+
+项目编号
+    [Arguments]    ${proj_code}
+    select frame    name=MenuAdd
+    input text    id=PROJECT_CODE    ${proj_code}
+
+项目名称
+    [Arguments]    ${proj_name}
+    input text    id=PROJECT_NAME    ${proj_name}
+
+备案编号
+    [Arguments]    ${re_code}
+    input text    id=REPORT_CODE    ${re_code}
+
+公共资源管理部门
+    input text    id=SELLER_INFO_ENTNAME    交易二科
+
+转让标的所在地区
+
+交易方式
+    select from list by value    name=PRE_EXCHANGE_TYPE    2
+
+代理机构联系人
+    input text    name=AGENT_LINK_MAN    李四
+
+代理机构联系方式
+    input text    name=AGENT_LINK_TEL    13567812341
+
+点击“提交”按钮
+    unselect frame
+    click element    xpath=/html/body/div[1]/table/tbody/tr[2]/td[2]/div/table/tbody/tr[3]/td/div/input[1]
+
+项目新增成功校验
+    [Arguments]    ${proj_name}
+    sleep    2
+    select frame    id=MainFrame
+    input text    id=searchtxt    ${proj_name}
+    click element    id=searchBtn
+    sleep    2
+    ${pro_name}    get text    xpath=//*[@id="tenderList"]/tbody/tr[2]/td[7]/a
+    should be equal    ${proj_name}    ${pro_name}
+    ${result}    get text    xpath=//*[@id="tenderList"]/tbody/tr[2]/td[12]
+    should be equal    ${result}    提交
+    unselect frame

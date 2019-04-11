@@ -1,7 +1,7 @@
 *** Settings ***
 Resource          政府采购_page.txt
 Resource          政府采购（代理）_element.txt
-Resource          政府采购（管理）_element.txt
+Resource          ../管理端（业务办理)_element.txt
 
 *** Keywords ***
 新增采购项目流程

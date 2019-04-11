@@ -1,3 +1,0 @@
-*** Settings ***
-Library           AutoItLibrary
-Library           Selenium2Library

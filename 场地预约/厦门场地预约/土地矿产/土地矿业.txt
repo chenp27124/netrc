@@ -7,4 +7,4 @@ Resource          ../public_flow.txt
 土地矿产-新增项目
     [Setup]    run keyword    登录流程_代理端
     新增土地矿产项目流程    190409001    TD-190409001    土地-190409001
-    [Teardown]    run keyword    退出
+    [Teardown]
